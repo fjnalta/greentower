@@ -1,6 +1,8 @@
 package sprites;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 
 import sprites.Player.playerState;
@@ -18,7 +20,7 @@ public class Player {
 
 	//create Gravity on Player only
 	private static final int GRAVITY = -15;
-	private static final int MOVEMENT = 100;
+	private static final int MOVEMENT = 200;
 	
 	private Vector3 moveDirection;
 	private Vector3 position;
@@ -35,7 +37,7 @@ public class Player {
 	public void update(float dt){
 		//set the PlayerState
 		setPlayerState();
-		
+				
 		if(position.y > 0){
 			//add gravity by delta time
 			velocity.add(0, GRAVITY, 0);
@@ -43,18 +45,18 @@ public class Player {
 		
 		velocity.scl(dt);
 		
-		
-		
 		//add velocity to the player position
 		position.add(moveDirection.x * MOVEMENT * dt, velocity.y, 0);
+		velocity.x = moveDirection.x * MOVEMENT * dt;
 		//don't fall out of the map
 		if (position.y < 0){
+			velocity.y = 0;
 			position.y = 0;
 		}
 		//reverse scl
 		velocity.scl(1/dt);
 		
-//		System.out.println(state);
+		//System.out.println(state);
 	}
 
 	public Vector3 getPosition() {
@@ -65,9 +67,13 @@ public class Player {
 		return player;
 	}
 	
-	public void jump(){
+	public Vector3 getVelocity() {
+		return velocity;
+	}
+	
+	public void jump() {
 		if(state != playerState.jumping){
-			velocity.y = 250;
+			velocity.y = 500;
 		}
 	}
 	
@@ -76,13 +82,12 @@ public class Player {
 	}
 	
 	private void setPlayerState(){
-		if(moveDirection.x == -1.0 || moveDirection.x == 1.0){
+		if(velocity.x < -0.1 || velocity.x > 0.1){
 			state = playerState.running;
 		}
-		if(moveDirection.y != 0){
-			//TODO - need collision detection so can check if jumping with velocity.y -> prevent jumping in air
+		if(velocity.y < -0.1 || velocity.y > 0.1){
 			state = playerState.jumping;
-		} else if (moveDirection.x == 0.0 && moveDirection.y == 0){
+		} else if (velocity.x < 0.1 && velocity.x > -0.1){
 			state = playerState.idle;
 		}
 	}

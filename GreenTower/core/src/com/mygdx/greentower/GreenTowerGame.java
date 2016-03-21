@@ -9,8 +9,8 @@ import states.MenuState;
 
 public class GreenTowerGame extends Game {
 	
-	public static final int WIDTH = 600;
-	public static final int HEIGHT = 800;
+	public static final int WIDTH = 20*64;
+	public static final int HEIGHT = 15*64;
 	
 	public static final String TITLE = "Green Tower";
 
@@ -24,7 +24,7 @@ public class GreenTowerGame extends Game {
 		gsm = new GameStateManager();
 		
 		//draw background image
-		Gdx.gl.glClearColor(1, 0, 0, 1);
+		Gdx.gl.glClearColor(1, 1, 1, 1);
 		//give MenuState to GSM
 		gsm.push(new MenuState(gsm));
 	}

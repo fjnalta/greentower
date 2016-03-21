@@ -15,7 +15,7 @@ public class TileMapGenerator {
 	
 	private void fillMap()
 	{
-		List<MapTile[]> rows = map.getRows();
+		List<Tile[]> rows = map.getRows();
 		rows.clear();
 		
 		for(int y = 0; y < map.getHeight(); y++)
@@ -26,7 +26,7 @@ public class TileMapGenerator {
 	
 	public void replaceTopRowAtBottom()
 	{
-		List<MapTile[]> rows = map.getRows();
+		List<Tile[]> rows = map.getRows();
 		
 		if(rows.size() > 0)
 		{
@@ -36,20 +36,20 @@ public class TileMapGenerator {
 		}
 	}
 	
-	private MapTile[] generateRow()
+	private Tile[] generateRow()
 	{
-		MapTile[] row = new MapTile[map.getWidth()];
+		Tile[] row = new Tile[map.getWidth()];
 		
 		if(row.length > 0)
 		{
-			row[0] = new MapTile();
+			row[0] = new Tile();
 		
 			for(int x = 1; x < row.length - 1; x++)
 			{
 				//TODO: create tiles
 			}
 			
-			row[row.length - 1] = new MapTile();
+			row[row.length - 1] = new Tile();
 		}
 		
 		return row;

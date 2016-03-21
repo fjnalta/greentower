@@ -3,13 +3,16 @@ package com.mygdx.greentower;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.badlogic.gdx.graphics.Texture;
+import com.mygdx.greentower.Tile.Type;
+
 public class TileMap {
 
 	private int width,
 				height;
 	
-	private List<MapTile[]> rows;
-	
+	private List<Tile[]> rows;
+
 	
 	
 
@@ -18,15 +21,19 @@ public class TileMap {
 		this.width = width;
 		this.height = height;
 		
-		rows = new LinkedList<MapTile[]>();
+		rows = new LinkedList<Tile[]>();
 	}
 	
-	public MapTile[] getRow(int y)
+	public Tile metal(int gridX, int gridY) {
+		return rows.get(gridY)[gridX] = new Tile();
+	}
+	
+	public Tile[] getRow(int y)
 	{
 		return rows.get(y);
 	}
 	
-	public List<MapTile[]> getRows() {
+	public List<Tile[]> getRows() {
 		return rows;
 	}
 	
