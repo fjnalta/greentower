@@ -10,8 +10,8 @@ public class Tile {
 		nonsolid,
 		platform,
 	}
-	private Type type;
-	private Texture texture;
+	public Type type;
+	public Texture texture;
 	
 	//Default: metal block
 	public Tile() {

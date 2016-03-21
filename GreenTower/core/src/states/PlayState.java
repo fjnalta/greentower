@@ -22,7 +22,7 @@ public class PlayState extends State{
 	
 	private static final int TILE_WIDTH = 64;
 	private static final int TILE_HEIGHT = 64;
-	private static final int TILES_HORIZONTAL = 20;
+	public static final int TILES_HORIZONTAL = 20;
 	
 	private Player player;
 	private Texture bg;
@@ -32,7 +32,7 @@ public class PlayState extends State{
 	private BitmapFont font;
 	
 
-	private TileMap tilemap;
+	public TileMap tilemap;
 	private Texture imgTile;
 	
 	private TileMapGenerator tilemapGenerator;
@@ -41,7 +41,7 @@ public class PlayState extends State{
 	protected PlayState(GameStateManager gsm) {
 		super(gsm);	
 		//create player
-		player = new Player(50,300);
+		player = new Player(64,64);
 		//set background texture
 		bg = new Texture("bg.png");
 		//only need one camera -> derive from state
@@ -61,8 +61,6 @@ public class PlayState extends State{
 		tilemap.metal(5, 1);
 		tilemap.metal(5, 2);
 		tilemap.metal(5, 3);
-		tilemap.metal(5, 4);
-		tilemap.metal(5, 5);
 	}
 
 	/**
@@ -90,6 +88,13 @@ public class PlayState extends State{
 		
 	}
 	
+//	protected void playerCollision() {
+//		Tile[] tiles = tilemap.getSurroundingTiles(player.getPosition().x, player.getPosition().y, 4);
+//		for(Tile tile : tiles) {
+//			player.
+//		}
+//	}
+	
 	/**
 	 * Updates the game logic.
 	 * 
@@ -99,6 +104,9 @@ public class PlayState extends State{
 	public void update(float dt) {
 		//always handle the input first
 		handleInput();
+		//then collision
+		//playerCollision();
+		//then everything else
 		player.update(dt);
 		//update the camera position relative to the player
 		cam.position.y = (player.getPosition().y - Gdx.graphics.getBackBufferHeight() / 2);
@@ -127,8 +135,8 @@ public class PlayState extends State{
 		sb.draw(player.getTexture(), player.getPosition().x, player.getPosition().y);
 		//TODO: For testing purposes
 		font.draw(sb, ""+player.state, player.getPosition().x+2, player.getPosition().y+20);
-		//font.draw(sb, "VelX: "+(int)player.getVelocity().x, player.getPosition().x+2, player.getPosition().y+40);
-		//font.draw(sb, "VelY: "+(int)player.getVelocity().y, player.getPosition().x+2, player.getPosition().y+60);
+		font.draw(sb, "VelX: "+(int)player.getVelocity().x, player.getPosition().x+2, player.getPosition().y+40);
+		font.draw(sb, "VelY: "+(int)player.getVelocity().y, player.getPosition().x+2, player.getPosition().y+60);
 		
 		
 		//TODO - create Map
@@ -158,7 +166,7 @@ public class PlayState extends State{
 					Int32Point2D screenPos = tileCamera.screenToWorld(worldPos.x, worldPos.y);
 				
 					sb.draw(
-					imgTile,
+					tile.texture,
 					screenPos.x,
 					screenPos.y,
 					TILE_WIDTH,
@@ -169,7 +177,6 @@ public class PlayState extends State{
 		
 		sb.end();
 	}
-	
 
 	@Override
 	public void dispose() {

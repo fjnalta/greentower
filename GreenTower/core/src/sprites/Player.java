@@ -3,9 +3,12 @@ package sprites;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
+import com.mygdx.greentower.GreenTowerGame;
 import sprites.Player.playerState;
+import states.GameStateManager;
 
 public class Player {
 	
@@ -28,10 +31,13 @@ public class Player {
 	
 	private Texture player;
 	
+	private Rectangle hitbox;
+	
 	public Player(int x, int y){
 		position = new Vector3(x, y, 0);
 		velocity = new Vector3(0, 0, 0);
 		player = new Texture("player.png");
+		//hitbox = new Rectangle(x,y,)
 	}
 	
 	public void update(float dt){
@@ -44,19 +50,24 @@ public class Player {
 		}
 		
 		velocity.scl(dt);
-		
-		//add velocity to the player position
-		position.add(moveDirection.x * MOVEMENT * dt, velocity.y, 0);
-		velocity.x = moveDirection.x * MOVEMENT * dt;
 		//don't fall out of the map
 		if (position.y < 0){
 			velocity.y = 0;
 			position.y = 0;
+			state = playerState.idle;
 		}
+		//controls in air are not as direct as on ground
+		if(state == playerState.jumping) {
+			if((velocity.x >= 0 && moveDirection.x <= 0) || (velocity.x <= 0 && moveDirection.x >= 0))
+				velocity.x += (moveDirection.x * MOVEMENT * dt)/40;
+		}
+		else
+			velocity.x = moveDirection.x * MOVEMENT * dt;
+		
+		//add velocity to the player position
+		position.add(velocity.x, velocity.y, 0);
 		//reverse scl
 		velocity.scl(1/dt);
-		
-		//System.out.println(state);
 	}
 
 	public Vector3 getPosition() {
@@ -73,7 +84,7 @@ public class Player {
 	
 	public void jump() {
 		if(state != playerState.jumping){
-			velocity.y = 500;
+			velocity.y = 600;
 		}
 	}
 	
@@ -82,14 +93,12 @@ public class Player {
 	}
 	
 	private void setPlayerState(){
-		if(velocity.x < -0.1 || velocity.x > 0.1){
-			state = playerState.running;
-		}
-		if(velocity.y < -0.1 || velocity.y > 0.1){
-			state = playerState.jumping;
-		} else if (velocity.x < 0.1 && velocity.x > -0.1){
+		if(velocity.y == 0 && velocity.x == 0 && state != playerState.jumping)
 			state = playerState.idle;
-		}
+		else if(velocity.y < -0.1 || velocity.y > 0.1)
+			state = playerState.jumping;
+		else if((velocity.x < -0.1 || velocity.x > 0.1) && state == playerState.idle)
+			state = playerState.running;
 	}
 	
 }

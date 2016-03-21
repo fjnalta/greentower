@@ -14,7 +14,7 @@ public class GreenTowerGame extends Game {
 	
 	public static final String TITLE = "Green Tower";
 
-	private GameStateManager gsm;
+	public static GameStateManager gsm;
 	private SpriteBatch batch;
 	
 	@Override
