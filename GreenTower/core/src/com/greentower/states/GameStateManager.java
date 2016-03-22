@@ -1,4 +1,4 @@
-package states;
+package com.greentower.states;
 
 import java.util.Stack;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;

@@ -1,14 +1,13 @@
-package sprites;
+package com.greentower.sprites;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
-
-import com.mygdx.greentower.GreenTowerGame;
-import sprites.Player.playerState;
-import states.GameStateManager;
+import com.greentower.GreenTowerGame;
+import com.greentower.sprites.Player.playerState;
+import com.greentower.states.GameStateManager;
 
 public class Player {
 	

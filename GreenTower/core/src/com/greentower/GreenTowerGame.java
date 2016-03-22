@@ -1,11 +1,11 @@
-package com.mygdx.greentower;
+package com.greentower;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import states.GameStateManager;
-import states.MenuState;
+import com.greentower.states.GameStateManager;
+import com.greentower.states.MenuState;
 
 public class GreenTowerGame extends Game {
 	

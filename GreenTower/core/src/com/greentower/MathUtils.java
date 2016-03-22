@@ -1,4 +1,4 @@
-package com.mygdx.greentower;
+package com.greentower;
 
 /**
  * Contains static helper methods for mathematical operations.

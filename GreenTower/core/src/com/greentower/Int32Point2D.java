@@ -1,4 +1,4 @@
-package com.mygdx.greentower;
+package com.greentower;
 
 public class Int32Point2D {
 

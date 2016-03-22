@@ -1,4 +1,4 @@
-package states;
+package com.greentower.states;
 
 import java.util.List;
 
@@ -8,15 +8,14 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
-import com.mygdx.greentower.GreenTowerGame;
-import com.mygdx.greentower.Int32Point2D;
-import com.mygdx.greentower.Tile;
-import sprites.Player;
-import sprites.Player.playerState;
-
-import com.mygdx.greentower.TileMap;
-import com.mygdx.greentower.TileMapCamera;
-import com.mygdx.greentower.TileMapGenerator;
+import com.greentower.GreenTowerGame;
+import com.greentower.Int32Point2D;
+import com.greentower.Tile;
+import com.greentower.TileMap;
+import com.greentower.TileMapCamera;
+import com.greentower.TileMapGenerator;
+import com.greentower.sprites.Player;
+import com.greentower.sprites.Player.playerState;
 
 public class PlayState extends State{
 	

@@ -1,4 +1,4 @@
-package states;
+package com.greentower.states;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;

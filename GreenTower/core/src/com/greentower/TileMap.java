@@ -1,12 +1,11 @@
-package com.mygdx.greentower;
+package com.greentower;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import states.PlayState;
-
 import com.badlogic.gdx.graphics.Texture;
-import com.mygdx.greentower.Tile.Type;
+import com.greentower.Tile.Type;
+import com.greentower.states.PlayState;
 
 public class TileMap {
 

@@ -1,4 +1,4 @@
-package com.mygdx.greentower;
+package com.greentower;
 
 import java.util.List;
 
