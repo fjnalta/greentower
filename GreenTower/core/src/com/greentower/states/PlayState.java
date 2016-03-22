@@ -151,10 +151,9 @@ public class PlayState extends State{
 			
 		}*/
 		
-		List<Tile[]> maprows = tilemap.getRows();
-		for(int y = 0; y < maprows.size(); y++)
+		for(int y = 0; y < tilemap.getHeight(); y++)
 		{
-			Tile[] row = maprows.get(y);
+			Tile[] row = tilemap.getRow(y);
 			
 			for(int x = 0; x < tilemap.getWidth(); x++)
 			{
