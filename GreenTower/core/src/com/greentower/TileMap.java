@@ -64,7 +64,7 @@ public class TileMap {
 		return rows.get(y);
 	}
 	
-	public List<Tile[]> getRows() {
+	List<Tile[]> getRows() {
 		return rows;
 	}
 	
