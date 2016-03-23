@@ -1,14 +1,11 @@
 package com.greentower.states;
 
-import java.text.Format;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -26,17 +23,10 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.ui.Value.Fixed;
 import com.greentower.GreenTowerGame;
-import com.greentower.Int32Point2D;
-import com.greentower.Tile;
-import com.greentower.TileMap;
-import com.greentower.TileMapCamera;
-import com.greentower.TileMapGenerator;
 import com.greentower.sprites.Player;
-import com.greentower.sprites.Player.playerState;
 
-public class PlayState extends State{
+public class PlayState extends State {
 	
 	private static final int TILE_WIDTH = 64;
 	private static final int TILE_HEIGHT = 64;
@@ -82,7 +72,7 @@ public class PlayState extends State{
 	private void createMap(){
 		maploader = new TmxMapLoader();
 		//load bottom map
-		map = maploader.load("asd.tmx");
+		map = maploader.load("SciFiStage.tmx");
 		renderer = new OrthogonalTiledMapRenderer(map);
 		
 		world = new World(new Vector2(0, 0), true);
@@ -160,7 +150,7 @@ public class PlayState extends State{
 		world.step(1/60f, 6, 2);
 		//playerCollision();
 		//then everything else
-		player.update(dt, this.listrect);
+		player.update(dt);
 		//update the camera position relative to the player
 		
 		if(player.getPosition().y > GreenTowerGame.HEIGHT/2 ){
