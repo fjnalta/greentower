@@ -1,15 +1,13 @@
 package com.greentower.sprites;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
-import com.greentower.states.GameStateManager;
-import com.greentower.states.PlayState;
 
-public class Jumper {
+public class Jumper extends Sprite {
+	
 	public Vector3 position;
 	
 	private static final int FRAME_COLS = 5;

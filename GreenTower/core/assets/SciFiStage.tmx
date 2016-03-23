@@ -3,9 +3,6 @@
  <tileset firstgid="1" name="Sci-Fi Platform" tilewidth="32" tileheight="32" tilecount="805" columns="35">
   <image source="scifi_platformTiles_32x32.png" trans="ff00ff" width="1120" height="736"/>
  </tileset>
- <objectgroup name="goal">
-  <object id="61" x="577" y="2113" width="29" height="61"/>
- </objectgroup>
  <layer name="background" width="20" height="150">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -370,5 +367,8 @@
   <object id="57" x="34" y="4546" width="381" height="28"/>
   <object id="58" x="514" y="4641" width="61" height="61"/>
   <object id="59" x="482" y="4706" width="125" height="60"/>
+ </objectgroup>
+ <objectgroup name="goal">
+  <object id="61" x="577" y="2113" width="29" height="61"/>
  </objectgroup>
 </map>

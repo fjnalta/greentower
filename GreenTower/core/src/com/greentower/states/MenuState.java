@@ -2,10 +2,17 @@ package com.greentower.states;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.greentower.GreenTowerGame;
 
 /**
@@ -16,90 +23,99 @@ import com.greentower.GreenTowerGame;
  * @author Yangus
  *
  */
-public class MenuState extends State {
-
-	private Texture background;
-	private Texture pressSpaceBtn;
-	private Sprite startgameBtn;
-	private Sprite showHighscoreBtn;
-	private Color isSelected;
-	// titlescreen with "Press SPACE
-	private boolean IsOntitlescreen;
-	// titlescreen with the choice
-	// true -> start game
-	// False -> showhighscore
-	private boolean ChoiceStartGame;
-
-	public MenuState(GameStateManager gsm) {
-		super(gsm);
-		this.background = new Texture("bg.png");
-		this.pressSpaceBtn = new Texture("titelscreen.png");
-		this.startgameBtn = new Sprite(new Texture("startBtn.png"));
-		this.startgameBtn.setPosition((GreenTowerGame.WIDTH / 2) - (pressSpaceBtn.getWidth() / 2),GreenTowerGame.HEIGHT / 2);
-		this.showHighscoreBtn = new Sprite(new Texture("highscoreBtn.png"));
-		this.showHighscoreBtn.setPosition((GreenTowerGame.WIDTH / 2) - (pressSpaceBtn.getWidth() / 2),(GreenTowerGame.HEIGHT / 2) - 100);
-		this.isSelected = new Color(0, 1f, 0, 0.5f);
-		this.startgameBtn.setColor(this.isSelected);
-		//Für die Menü auswahl
-		this.IsOntitlescreen = true;
-		this.ChoiceStartGame = true;
-
+public class MenuState implements Screen {
+	
+	private Texture titleText = new Texture("bg.png");
+	
+	private GreenTowerGame game;
+	private OrthographicCamera gamecam;
+	private Viewport gamePort;
+	private Stage stage;
+	
+	private Label startLabel;
+	private Label highscoreLabel;
+	private Table menuTable;
+	
+	public MenuState(GreenTowerGame game){
+		
+		this.game = game;
+		gamecam = new OrthographicCamera();
+		gamePort = new FitViewport(GreenTowerGame.V_WIDTH, GreenTowerGame.V_HEIGHT, gamecam);
+		stage = new Stage(gamePort, ((GreenTowerGame) game).batch);
+		
+		Label.LabelStyle font = new Label.LabelStyle(new BitmapFont(), Color.WHITE);
+		menuTable = new Table();
+		menuTable.center();
+		menuTable.setFillParent(true);
+				
+//		handleScreen();
+		
+		startLabel = new Label("START GAME", font);
+		highscoreLabel = new Label("HIGHSCORE", font);
+		
+		menuTable.add(startLabel);
+		menuTable.row();
+		menuTable.add(highscoreLabel);
+		stage.addActor(menuTable);
 	}
 
 	@Override
-	public void handleInput() {
+	public void show() {
+		
+	}
+	
+	@Override
+	public void render(float delta) {
+		update(delta);
+		
+		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+		game.batch.begin();
+		game.batch.draw(titleText, (GreenTowerGame.V_WIDTH / 2) - (titleText.getWidth() / 2), (GreenTowerGame.V_HEIGHT) - (titleText.getHeight()));
+		game.batch.end();		
+		
+		
+		stage.draw();
+	}
+	
+	public void update(float dt){
+		handleInput(dt);
+	}
+	
+	public void handleInput(float dt){
 		if (Gdx.input.isKeyJustPressed(Keys.ENTER)) {
-			if (this.IsOntitlescreen) {
-				this.IsOntitlescreen = !this.IsOntitlescreen;
-			} else {
-				if (this.ChoiceStartGame) {
-					gsm.set(new PlayState(gsm));
-					dispose();
-				}else{
-					gsm.set(new HighscoreState(gsm,false));
-					dispose();
-				}
-			}
+				game.setScreen(new PlayState(this.game));
 		}
-
-		if (!this.IsOntitlescreen && (Gdx.input.isKeyJustPressed(Keys.UP) || Gdx.input.isKeyJustPressed(Keys.DOWN))) {
-			this.ChoiceStartGame = !this.ChoiceStartGame;
-			if (this.ChoiceStartGame) {
-				this.startgameBtn.setColor(this.isSelected);
-				this.showHighscoreBtn.setColor(1, 1, 1, 1);
-			} else {
-				this.showHighscoreBtn.setColor(this.isSelected);
-				this.startgameBtn.setColor(1, 1, 1, 1);
-			}
-		}
-
 	}
 
 	@Override
-	public void update(float dt) {
-		// always check input first
-		handleInput();
+	public void resize(int width, int height) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
-	public void render(SpriteBatch sb) {
-		// open "container"
-		sb.begin();
-		sb.draw(background, (GreenTowerGame.WIDTH / 4), (GreenTowerGame.HEIGHT) - (GreenTowerGame.HEIGHT / 4));
-		if (this.IsOntitlescreen) {
-			sb.draw(this.pressSpaceBtn, (GreenTowerGame.WIDTH / 2) - (pressSpaceBtn.getWidth() / 2),
-					GreenTowerGame.HEIGHT / 2);
-		} else {
-			this.startgameBtn.draw(sb);
-			this.showHighscoreBtn.draw(sb);
-		}
-		sb.end();
+	public void pause() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void resume() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void hide() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
 	public void dispose() {
-		background.dispose();
-		pressSpaceBtn.dispose();
+//		background.dispose();
+//		pressSpaceBtn.dispose();
 	}
-
 }

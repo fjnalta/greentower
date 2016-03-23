@@ -1,15 +1,11 @@
 package com.greentower.sprites;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
-import com.greentower.GreenTowerGame;
-import com.greentower.sprites.Player.playerState;
-import com.greentower.states.GameStateManager;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.physics.box2d.World;
 
-public class Player {
+public class Player extends Sprite {
 	
 	//playerStates for handling animations and prevent multiple jumping
 	public enum playerState {
@@ -30,19 +26,16 @@ public class Player {
 	
 	private Texture player;
 	
-	private Rectangle hitbox;
-	
-	public Player(int x, int y){
-		position = new Vector3(x, y, 0);
+	public Player(World world){
+		position = new Vector3(32, 32, 0);
 		velocity = new Vector3(0, 0, 0);
 		player = new Texture("player.png");
-		//hitbox = new Rectangle(x,y,)
 	}
 	
 	public void update(float dt){
 		//set the PlayerState
 		setPlayerState();
-				
+		
 		if(position.y > 0){
 			//add gravity by delta time
 			velocity.add(0, GRAVITY, 0);
@@ -99,6 +92,5 @@ public class Player {
 		else if((velocity.x < -0.1 || velocity.x > 0.1) && state == playerState.idle)
 			state = playerState.running;
 	}
-	
 }
 
