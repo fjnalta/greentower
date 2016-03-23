@@ -1,16 +1,24 @@
 package com.greentower.states;
 
+import java.io.IOException;
 import java.util.Stack;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.greentower.data.Highscore;
 
 //handling GameStates here with a stack
 public class GameStateManager {
 	
 	private Stack<State> states;
-	
+	public Highscore score;
 	
 	public GameStateManager(){
 		states = new Stack<State>();
+		try {
+			score = new Highscore();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void push(State state){
