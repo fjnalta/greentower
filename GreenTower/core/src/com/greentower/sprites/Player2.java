@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.physics.box2d.World;
 
-public class Player extends Sprite {
+public class Player2 extends Sprite {
 	
 	//playerStates for handling animations and prevent multiple jumping
 	public enum playerState {
@@ -26,7 +26,7 @@ public class Player extends Sprite {
 	
 	private Texture player;
 	
-	public Player(World world){
+	public Player2(World world) {
 		position = new Vector3(64, 64, 0);
 		velocity = new Vector3(0, 0, 0);
 		player = new Texture("player.png");
@@ -97,4 +97,3 @@ public class Player extends Sprite {
 		
 	}
 }
-
