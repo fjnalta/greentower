@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Stack;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.greentower.data.Highscore;
+import com.greentower.sprites.Player;
 
 //handling GameStates here with a stack
 public class GameStateManager {
@@ -19,6 +20,10 @@ public class GameStateManager {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public Player getPlayer() {
+		return peek().player;
 	}
 	
 	public void push(State state){

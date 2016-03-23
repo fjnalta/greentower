@@ -25,7 +25,7 @@ public class Player {
 	private static final int MOVEMENT = 200;
 	
 	private Vector3 moveDirection;
-	private Vector3 position;
+	public Vector3 position;
 	private Vector3 velocity;
 	
 	private Texture player;
