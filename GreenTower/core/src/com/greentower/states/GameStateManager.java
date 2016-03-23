@@ -1,7 +1,9 @@
 package com.greentower.states;
 
+import java.io.IOException;
 import java.util.Stack;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.greentower.data.Highscore;
 
 //handling GameStates here with a stack
 public class GameStateManager {

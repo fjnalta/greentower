@@ -6,10 +6,9 @@ import java.util.Collections;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Input.TextInputListener;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.profiling.GL20Profiler;
 import com.greentower.data.Point;
 
 public class HighscoreState extends State{
@@ -69,6 +68,7 @@ public class HighscoreState extends State{
 		Gdx.gl.glClear(GL20.GL_DEPTH_BITS);
 		// TODO Auto-generated method stub
 		sb.begin();
+		gsm.peek().font.setColor(Color.WHITE);
 		float middle = Gdx.graphics.getWidth()/2-100;
 		gsm.peek().font.draw(sb, "HIGHSCORE", middle, Gdx.graphics.getHeight()/2+100 );
 		gsm.peek().font.draw(sb, "name/score", middle, Gdx.graphics.getHeight()/2+50 );
