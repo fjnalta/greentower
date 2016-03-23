@@ -101,6 +101,8 @@ public class PlayState extends State{
 //		}
 //	}
 	
+	
+	float camPosYbefore = 0;
 	/**
 	 * Updates the game logic.
 	 * 
@@ -115,8 +117,9 @@ public class PlayState extends State{
 		//then everything else
 		player.update(dt);
 		//update the camera position relative to the player
-		//cam.position.y = (player.getPosition().y - Gdx.graphics.getBackBufferHeight() / 2);
-		if(player.getPosition().y > GreenTowerGame.HEIGHT/2){
+		
+		if(player.getPosition().y > GreenTowerGame.HEIGHT/2 &&(camPosYbefore < player.getPosition().y)){
+			camPosYbefore = player.getPosition().y;
 			cam.position.set( GreenTowerGame.WIDTH / 2,player.getPosition().y ,0 );
 		}
 		//TODO - create new platforms here
