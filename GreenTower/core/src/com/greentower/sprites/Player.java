@@ -83,7 +83,7 @@ public class Player {
 	
 	public void jump() {
 		if(state != playerState.jumping){
-			velocity.y = 600;
+			velocity.y = 1000;
 		}
 	}
 	

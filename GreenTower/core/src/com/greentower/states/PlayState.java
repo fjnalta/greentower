@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -29,6 +30,7 @@ public class PlayState extends State{
 	//TODO: For testing purposes
 	private SpriteBatch batch;
 	private BitmapFont font;
+	private OrthographicCamera cam;
 	
 
 	public TileMap tilemap;
@@ -44,9 +46,12 @@ public class PlayState extends State{
 		//set background texture
 		bg = new Texture("bg.png");
 		//only need one camera -> derive from state
-		cam.setToOrtho(false, GreenTowerGame.WIDTH / 2, GreenTowerGame.HEIGHT / 2);
+
 		font = new BitmapFont();
 		
+		cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		cam.position.set( GreenTowerGame.WIDTH / 2, GreenTowerGame.HEIGHT/2,0);
+		cam.update();
 		
 		//TODO - create the map?!?
 		imgTile = new Texture("platform.png");
@@ -60,6 +65,8 @@ public class PlayState extends State{
 		tilemap.metal(5, 1);
 		tilemap.metal(5, 2);
 		tilemap.metal(5, 3);
+		
+		
 	}
 
 	/**
@@ -108,11 +115,13 @@ public class PlayState extends State{
 		//then everything else
 		player.update(dt);
 		//update the camera position relative to the player
-		cam.position.y = (player.getPosition().y - Gdx.graphics.getBackBufferHeight() / 2);
-		
+		//cam.position.y = (player.getPosition().y - Gdx.graphics.getBackBufferHeight() / 2);
+		if(player.getPosition().y > GreenTowerGame.HEIGHT/2){
+			cam.position.set( GreenTowerGame.WIDTH / 2,player.getPosition().y ,0 );
+		}
 		//TODO - create new platforms here
 		
-		
+
 		//update the camera
 		cam.update();
 	}
@@ -125,7 +134,7 @@ public class PlayState extends State{
 	 */
 	@Override
 	public void render(SpriteBatch sb) {
-		
+		sb.setProjectionMatrix(cam.combined);
 		//start packaging
 		sb.begin();
 		//draw background in the middle of the screen
@@ -136,7 +145,6 @@ public class PlayState extends State{
 		font.draw(sb, ""+player.state, player.getPosition().x+2, player.getPosition().y+20);
 		font.draw(sb, "VelX: "+(int)player.getVelocity().x, player.getPosition().x+2, player.getPosition().y+40);
 		font.draw(sb, "VelY: "+(int)player.getVelocity().y, player.getPosition().x+2, player.getPosition().y+60);
-		
 		
 		//TODO - create Map
 		
