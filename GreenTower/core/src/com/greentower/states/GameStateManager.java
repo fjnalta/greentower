@@ -7,10 +7,16 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public class GameStateManager {
 	
 	private Stack<State> states;
-	
+	public Highscore score;
 	
 	public GameStateManager(){
 		states = new Stack<State>();
+		try {
+			score = new Highscore();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void push(State state){

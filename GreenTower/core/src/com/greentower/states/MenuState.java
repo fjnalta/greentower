@@ -56,7 +56,8 @@ public class MenuState extends State {
 					gsm.set(new PlayState(gsm));
 					dispose();
 				}else{
-					//SHOW HIGHSCORE
+					gsm.set(new HighscoreState(gsm,false));
+					dispose();
 				}
 			}
 		}

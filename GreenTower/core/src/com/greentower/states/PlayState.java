@@ -124,7 +124,11 @@ public class PlayState extends State{
 		}
 		//TODO - create new platforms here
 		
-
+		//if game ends open HighscoreState
+		//if (player.getPosition().y < (cam.position.y - cam.viewportHeight / 2)) {
+		//	gsm.set(new HighscoreState(gsm,true));
+		//	dispose();
+		//}
 		//update the camera
 		cam.update();
 	}
