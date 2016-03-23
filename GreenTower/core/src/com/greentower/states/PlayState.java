@@ -15,7 +15,6 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
@@ -60,12 +59,12 @@ public class PlayState extends State {
 
 		font = new BitmapFont();
 		
-		createMap("SciFiStage.tmx");
+		createMap("asd.tmx");
 		
 		camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		camera.position.set(
 				GreenTowerGame.WIDTH / 2,
-				GreenTowerGame.HEIGHT/2,
+				GreenTowerGame.HEIGHT / 2,
 				0);
 		
 		camera.update();
@@ -74,7 +73,7 @@ public class PlayState extends State {
 	/**
 	 * Creates the main map.
 	 * 
-	 * @param mapFileName the name of the tmx file that contains the map data.
+	 * @param mapFileName the name of the .tmx file that contains the map data.
 	 */
 	private void createMap(String mapFileName) {
 		maploader = new TmxMapLoader();
@@ -90,15 +89,15 @@ public class PlayState extends State {
 		Body body;
 		
 		//import MapObjects
-		for(MapObject object: map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)){
+		for(MapObject object : map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)){
 			
 			Rectangle rect = ((RectangleMapObject) object).getRectangle();
 			bdef.type = BodyDef.BodyType.StaticBody;
 			
-			bdef.position.set(rect.getX() + rect.getWidth() / 2, rect.getY() + rect.getHeight() /2);
+			bdef.position.set(rect.getX() + rect.getWidth() / 2, rect.getY() + rect.getHeight() / 2);
 			
 			body = world.createBody(bdef);
-			shape.setAsBox(rect.getWidth() / 2, rect.getHeight() /2);
+			shape.setAsBox(rect.getWidth() / 2, rect.getHeight() / 2);
 			
 			fdef.shape = shape;
 			body.createFixture(fdef);
@@ -121,15 +120,15 @@ public class PlayState extends State {
 		//always handle the input first
 		handleInput();
 		
-		world.step(1/60f, 6, 2);
+		//world.step(1 / 60f, 6, 2);
 		//playerCollision();
 		//then everything else
 		player.update(dt);
 		//update the camera position relative to the player
 		
-		if(player.getPosition().y > GreenTowerGame.HEIGHT/2 ){
+		if(player.getPosition().y > GreenTowerGame.HEIGHT / 2){
 			//camPosYbefore = player.getPosition().y;
-			camera.position.set( GreenTowerGame.WIDTH / 2,player.getPosition().y ,0 );
+			camera.position.set(GreenTowerGame.WIDTH / 2, player.getPosition().y, 0);
 		}
 
 		//update the camera
@@ -142,23 +141,6 @@ public class PlayState extends State {
 	 */
 	@Override
 	protected void handleInput() {
-		if(Gdx.input.isKeyPressed(Keys.SPACE))
-		{
-			player.jump();
-		}
-		if(Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Keys.RIGHT))
-		{
-			if(Gdx.input.isKeyPressed(Keys.LEFT))
-			{
-				player.setMoveDirection(new Vector3(-1,0,0));
-			}
-			if(Gdx.input.isKeyPressed(Keys.RIGHT))
-			{
-				player.setMoveDirection(new Vector3(1,0,0));
-			}
-		} else {
-			player.setMoveDirection(new Vector3(0,0,0));
-		}
 		
 	}
 
@@ -179,12 +161,12 @@ public class PlayState extends State {
 		
 		spritebatch.begin();
 		
-		//draw the player
-		spritebatch.draw(player.getTexture(), player.getPosition().x, player.getPosition().y);
+		player.draw(spritebatch);
+		
 		//TODO: For testing purposes
-		font.draw(spritebatch, ""+player.state, player.getPosition().x+2, player.getPosition().y+20);
-		font.draw(spritebatch, "VelX: "+(int)player.getVelocity().x, player.getPosition().x+2, player.getPosition().y+40);
-		font.draw(spritebatch, "VelY: "+(int)player.getVelocity().y, player.getPosition().x+2, player.getPosition().y+60);
+		//font.draw(spritebatch, ""+player.state, player.getPosition().x+2, player.getPosition().y+20);
+		//font.draw(spritebatch, "VelX: "+(int)player.getVelocity().x, player.getPosition().x+2, player.getPosition().y+40);
+		//font.draw(spritebatch, "VelY: "+(int)player.getVelocity().y, player.getPosition().x+2, player.getPosition().y+60);
 		
 		spritebatch.end();
 	}
