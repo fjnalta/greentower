@@ -9,8 +9,8 @@ import com.greentower.states.MenuState;
 
 public class GreenTowerGame extends Game {
 	
-	public static final int WIDTH = 20*64;
-	public static final int HEIGHT = 15*64;
+	public static final int WIDTH = 20*32;
+	public static final int HEIGHT = 15*32;
 	
 	public static final String TITLE = "Green Tower";
 
