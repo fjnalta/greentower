@@ -1,18 +1,19 @@
 package com.greentower.sprites;
 
+import java.util.List;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
-import com.greentower.GreenTowerGame;
-import com.greentower.sprites.Player.playerState;
-import com.greentower.states.GameStateManager;
+import com.greentower.SpatialHashMap;
 import com.sun.media.jfxmedia.events.PlayerStateEvent.PlayerState;
 
+/**
+ * Contains the logic to update and draw the player.
+ */
 public class Player {
 	
 	//playerStates for handling animations and prevent multiple jumping
@@ -27,7 +28,7 @@ public class Player {
 	private static final int GRAVITY = -15;
 	private static final int MOVEMENT = 200;
 	
-	private static final float VELOCITY_JUMP = 200f;
+	private static final float VELOCITY_JUMP = 400f;
 	private static final float VELOCITY_WALK = 200f;
 	
 	/**
@@ -50,18 +51,30 @@ public class Player {
 	
 	private Texture texture;
 	
+	private boolean isOnGround = false;
+	
+	private SpatialHashMap<RectangleMapObject> collisionMap;
+	
 	
 	/**
 	 * Initializes a new instance of the {@link Player} class.
 	 * 
 	 * @param posX the horizontal position of the player.
 	 * @param posY the vertical position of the player.
+	 * @param collisionMap the {@link SpatialHashMap} which is used for collision
+	 * detection.
 	 */
-	public Player(int posX, int posY) {
+	public Player(
+			int posX,
+			int posY,
+			SpatialHashMap<RectangleMapObject> collisionMap)
+	{
 		position = new Vector2(posX, posY);
 		velocity = new Vector2(0, 0);
 		
 		texture = new Texture("player.png");
+		
+		this.collisionMap = collisionMap;
 	}
 	
 	
@@ -93,28 +106,28 @@ public class Player {
 	}
 	
 
-	
+	/**
+	 * Tells the current {@link Player} to update itself.
+	 * @param deltaTime
+	 */
 	public void update(float deltaTime){
 		
 		handleInput();
 		
+		checkForCollision();
+		
 		//set the PlayerState
 		updatePlayerState();
 				
-		if(position.y > 0)
+		if(!isOnGround)
 			velocity.add(0, GRAVITY); //add gravity by delta time
 		
-		velocity.scl(deltaTime);
-		//don't fall out of the map
-		if (position.y < 0) 
-		{
-			velocity.y = 0;
-			position.y = 0;
-			state = playerState.idle;
-		}
+		
+		float changeX = velocity.x * deltaTime;
+		float changeY = velocity.y * deltaTime;
 		
 		//controls in air are not as direct as on ground
-		if(state == playerState.jumping)
+		/*if(state == playerState.jumping)
 		{
 			if((velocity.x >= 0 && moveDirection.x <= 0)
 				|| (velocity.x <= 0 && moveDirection.x >= 0))
@@ -122,14 +135,134 @@ public class Player {
 				velocity.x += (moveDirection.x * MOVEMENT * deltaTime) / 40;
 			}
 		}
-		else
-			velocity.x = moveDirection.x * MOVEMENT * deltaTime;
+		else*/
+			//velocity.x = moveDirection.x * MOVEMENT * deltaTime;
 		
 		//add velocity to the player position
-		position.add(velocity.x, velocity.y);
-		//reverse scl
-		velocity.scl(1 / deltaTime);
+		
+		position.x += changeX;
+		position.y += changeY;
+	
 	}
+	
+	/**
+	 * Checks for collision with the world.
+	 */
+	private void checkForCollision()
+	{
+		//---Vertical collision
+		
+		if(velocity.y > 0) //moving up
+		{
+			checkCollisionTop();
+		}
+		else if(velocity.y < 0) // moving down
+		{
+			isOnGround = checkCollisionBottom();
+		}
+		
+		
+		//---Horizontal collision
+		
+		if(velocity.x > 0) // moving right
+		{
+			checkCollisionRight();
+		}
+		else if(velocity.x < 0) //moving left
+		{
+			checkCollisionLeft();
+		}
+	}
+	
+	
+	private boolean checkCollisionTop()
+	{
+		int leftPosX = (int)position.x;
+		int leftPosY = (int)position.y + BOX_HEIGHT;
+		
+		int rightPosX = (int)position.x + BOX_WIDTH;
+		int rightPosY = (int)position.y + BOX_HEIGHT;
+		
+	
+		if(collisionMap.contains(leftPosX, leftPosY)
+			|| collisionMap.contains(rightPosX, rightPosY))
+		{
+			velocity.y = 0;
+			
+			position.y = (((int)leftPosY / collisionMap.getCellSize()) * collisionMap.getCellSize()) - BOX_HEIGHT;
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private boolean checkCollisionBottom()
+	{
+		int leftPosX = (int)position.x;
+		int leftPosY = (int)position.y;
+		
+		int rightPosX = (int)position.x + BOX_WIDTH;
+		int rightPosY = (int)position.y;
+		
+	
+		if(collisionMap.contains(leftPosX, leftPosY)
+			|| collisionMap.contains(rightPosX, rightPosY))
+		{
+			velocity.y = 0;
+			
+			position.y = (((int)position.y / collisionMap.getCellSize()) + 1) * collisionMap.getCellSize();
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private boolean checkCollisionLeft()
+	{
+		int bottomPosX = (int)position.x;
+		int bottomPosY = (int)position.y;
+		
+		int topPosX = (int)position.x;
+		int topPosY = (int)position.y + BOX_HEIGHT;
+		
+	
+		if(collisionMap.contains(bottomPosX, bottomPosY)
+			|| collisionMap.contains(topPosX, topPosY))
+		{
+			velocity.x = 0;
+			
+			position.x = (((int)position.x / collisionMap.getCellSize()) + 1) * collisionMap.getCellSize();
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private boolean checkCollisionRight()
+	{
+		int bottomPosX = (int)position.x + BOX_WIDTH;
+		int bottomPosY = (int)position.y;
+		
+		int topPosX = (int)position.x + BOX_WIDTH;
+		int topPosY = (int)position.y + BOX_HEIGHT;
+		
+	
+		if(collisionMap.contains(bottomPosX, bottomPosY)
+			|| collisionMap.contains(topPosX, topPosY))
+		{
+			velocity.x = 0;
+			
+			position.x = (((int)bottomPosX / collisionMap.getCellSize()) * collisionMap.getCellSize()) - BOX_WIDTH;
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
 	
 	/**
 	 * Handles the keyboard input.
@@ -139,18 +272,14 @@ public class Player {
 		if(Gdx.input.isKeyPressed(Keys.SPACE))
 			jump();
 		
-		if(Gdx.input.isKeyPressed(Keys.LEFT) 
-			|| Gdx.input.isKeyPressed(Keys.RIGHT))
-		{
-			if(Gdx.input.isKeyPressed(Keys.LEFT))
-				setMoveDirection(new Vector2(-1, 0));
-			
-			if(Gdx.input.isKeyPressed(Keys.RIGHT))
-				setMoveDirection(new Vector2(1, 0));
-			
-		}
+		if(Gdx.input.isKeyPressed(Keys.LEFT))
+			velocity.x = -VELOCITY_WALK;
+		
+		else if(Gdx.input.isKeyPressed(Keys.RIGHT))
+			velocity.x = VELOCITY_WALK;
+		
 		else
-			setMoveDirection(new Vector2(0, 0));
+			velocity.x = 0;
 	}
 	
 	/**
@@ -169,8 +298,10 @@ public class Player {
 	 * Tells the current {@link Player} to jump.
 	 */
 	private void jump() {
-		if(state != playerState.jumping){
-			velocity.y = 1000;
+		if(isOnGround){
+			velocity.y = VELOCITY_JUMP;
+			
+			isOnGround = false;
 		}
 	}
 	

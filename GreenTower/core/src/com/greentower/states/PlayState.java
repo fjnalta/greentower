@@ -1,26 +1,18 @@
 package com.greentower.states;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.greentower.GreenTowerGame;
+import com.greentower.SpatialHashMap;
 import com.greentower.sprites.Player;
 
 
@@ -41,7 +33,9 @@ public class PlayState extends State {
 	
 	private OrthogonalTiledMapRenderer mapRenderer;
 	
-	private List<Rectangle> listrect = new ArrayList<Rectangle>();
+	//private List<Rectangle> mapObjectRects = new ArrayList<Rectangle>();
+	
+	private SpatialHashMap<RectangleMapObject> collisionMap;
 	
 	//Box2d variables for physics and colliders
 	private World world;
@@ -55,11 +49,11 @@ public class PlayState extends State {
 	protected PlayState(GameStateManager gamestateManager) {
 		super(gamestateManager);	
 		
-		player = new Player(64, 64);
+		createMap("asd.tmx");
+		
+		player = new Player(64, 80, collisionMap);
 
 		font = new BitmapFont();
-		
-		createMap("asd.tmx");
 		
 		camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		camera.position.set(
@@ -83,29 +77,38 @@ public class PlayState extends State {
 		
 		world = new World(new Vector2(0, 0), true);
 		
-		BodyDef bdef = new BodyDef();
-		PolygonShape shape = new PolygonShape();
-		FixtureDef fdef = new FixtureDef();
-		Body body;
+//		/*
+//		BodyDef bdef = new BodyDef();
+//		PolygonShape shape = new PolygonShape();
+//		FixtureDef fdef = new FixtureDef();
+//		*/
+//		
+//		//import MapObjects
+//		for(MapObject object : map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)){
+//			
+//			Rectangle rect = ((RectangleMapObject) object).getRectangle();
+//			
+//			/*
+//			bdef.type = BodyDef.BodyType.StaticBody;
+//			
+//			bdef.position.set(rect.getX() + rect.getWidth() / 2, rect.getY() + rect.getHeight() / 2);
+//			
+//			Body body = world.createBody(bdef);
+//			
+//			shape.setAsBox(rect.getWidth() / 2, rect.getHeight() / 2);
+//			
+//			fdef.shape = shape;
+//			body.createFixture(fdef);
+//			*/
+//			
+//			mapObjectRects.add(rect);
+//		}	
 		
-		//import MapObjects
-		for(MapObject object : map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)){
-			
-			Rectangle rect = ((RectangleMapObject) object).getRectangle();
-			bdef.type = BodyDef.BodyType.StaticBody;
-			
-			bdef.position.set(rect.getX() + rect.getWidth() / 2, rect.getY() + rect.getHeight() / 2);
-			
-			body = world.createBody(bdef);
-			shape.setAsBox(rect.getWidth() / 2, rect.getHeight() / 2);
-			
-			fdef.shape = shape;
-			body.createFixture(fdef);
-			
-			//Test
-			listrect.add(rect);
-		
-		}		
+		collisionMap = SpatialHashMap.FromMapObjects(map.getLayers()
+									 .get(2).getObjects()
+									 .getByType(
+											 RectangleMapObject.class),
+									 		 GreenTowerGame.TILE_SIZE);
 	}
 
 	
@@ -120,7 +123,7 @@ public class PlayState extends State {
 		//always handle the input first
 		handleInput();
 		
-		//world.step(1 / 60f, 6, 2);
+		world.step(1 / 60f, 6, 2);
 		//playerCollision();
 		//then everything else
 		player.update(dt);
@@ -179,6 +182,7 @@ public class PlayState extends State {
 		mapRenderer.dispose();
 		font.dispose();
 		map.dispose();
+		world.dispose();
 	}
 
 }
