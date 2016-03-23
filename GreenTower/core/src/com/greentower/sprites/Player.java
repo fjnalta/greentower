@@ -92,9 +92,5 @@ public class Player extends Sprite {
 		else if((velocity.x < -0.1 || velocity.x > 0.1) && state == playerState.idle)
 			state = playerState.running;
 	}
-	
-	private void detectCollision(){
-		
-	}
 }
 

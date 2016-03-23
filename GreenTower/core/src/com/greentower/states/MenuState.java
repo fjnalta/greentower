@@ -36,27 +36,31 @@ public class MenuState implements Screen {
 	private Label highscoreLabel;
 	private Table menuTable;
 	
+	
+	private boolean wannaPlay;
+	
 	public MenuState(GreenTowerGame game){
 		
 		this.game = game;
 		gamecam = new OrthographicCamera();
 		gamePort = new FitViewport(GreenTowerGame.V_WIDTH, GreenTowerGame.V_HEIGHT, gamecam);
 		stage = new Stage(gamePort, ((GreenTowerGame) game).batch);
-		
+
 		Label.LabelStyle font = new Label.LabelStyle(new BitmapFont(), Color.WHITE);
 		menuTable = new Table();
 		menuTable.center();
 		menuTable.setFillParent(true);
-				
-//		handleScreen();
 		
 		startLabel = new Label("START GAME", font);
 		highscoreLabel = new Label("HIGHSCORE", font);
+		startLabel.setColor(Color.RED);
 		
 		menuTable.add(startLabel);
 		menuTable.row();
 		menuTable.add(highscoreLabel);
 		stage.addActor(menuTable);
+		
+		wannaPlay = true;
 	}
 
 	@Override
@@ -84,15 +88,32 @@ public class MenuState implements Screen {
 	}
 	
 	public void handleInput(float dt){
-		if (Gdx.input.isKeyJustPressed(Keys.ENTER)) {
-				game.setScreen(new PlayState(this.game));
+		if ((!wannaPlay) && Gdx.input.isKeyJustPressed(Keys.ENTER)){
+			game.setScreen(new HighscoreState(this.game));
+		}
+		if ((wannaPlay) && Gdx.input.isKeyJustPressed(Keys.ENTER)) {
+			game.setScreen(new PlayState(this.game));
+		}
+		if (Gdx.input.isKeyJustPressed(Keys.UP)){
+			if(!wannaPlay){
+				wannaPlay = true;
+				startLabel.setColor(Color.RED);
+				highscoreLabel.setColor(Color.WHITE);
+			}
+		}
+		if (Gdx.input.isKeyJustPressed(Keys.DOWN)){
+			if(wannaPlay){
+				wannaPlay = false;
+				startLabel.setColor(Color.WHITE);
+				highscoreLabel.setColor(Color.RED);
+			}
 		}
 	}
 
 	@Override
 	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
-		
+		//update when the window is resized
+		gamePort.update(width, height);
 	}
 
 	@Override
@@ -115,7 +136,6 @@ public class MenuState implements Screen {
 
 	@Override
 	public void dispose() {
-//		background.dispose();
-//		pressSpaceBtn.dispose();
+		stage.dispose();
 	}
 }

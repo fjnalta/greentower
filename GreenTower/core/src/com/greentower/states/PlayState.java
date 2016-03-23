@@ -5,8 +5,6 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -14,23 +12,17 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.physics.box2d.Shape.Type;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.greentower.GreenTowerGame;
 import com.greentower.Hud;
-import com.greentower.sprites.Player;
 
 public class PlayState implements Screen {
 	
@@ -50,21 +42,14 @@ public class PlayState implements Screen {
 	//Box2d Physics
 	private World world;
 	private Box2DDebugRenderer b2dr;
-	
-	Fixture playerPhysicsFixture;
-	Fixture playerSensorFixture;
-	
-	private BitmapFont font;
 
 	public PlayState(GreenTowerGame game){
 		this.game = game;
 		gamecam = new OrthographicCamera();
 		gamePort = new FitViewport(GreenTowerGame.V_WIDTH, GreenTowerGame.V_HEIGHT, gamecam);
 		hud = new Hud(game.batch);
-		
-//		player = new Player(world);
+		//create the TileMap
 		createMap();
-		
 		//center the camera around the viewport
 		gamecam.position.set(gamePort.getScreenWidth() / 2, gamePort.getScreenHeight() / 2, 0);
 	
@@ -138,21 +123,10 @@ public class PlayState implements Screen {
 		renderer.render();
 		//render DEBUG
 		b2dr.render(world, gamecam.combined);
-		//center the Playscreen around the Viewport
+		//center the Play screen around the Viewport
 		gamecam.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);
-		//draw the hud
-		hud.stage.draw();
-		
-		//
-//		player.setTransform(32, 32, 0);
-//		player.setFixedRotation(true);						
-		
-		game.batch.begin();
-//		game.batch.draw(player.getTexture(), player.getPosition().x, player.getPosition().y);
-//		font.draw(game.batch, "" + player.state, player.getPosition().x+2, player.getPosition().y+20);
-//		font.draw(game.batch, "VelX: "+(int)player.getVelocity().x, player.getPosition().x+2, player.getPosition().y+40);
-//		font.draw(game.batch, "VelY: "+(int)player.getVelocity().y, player.getPosition().x+2, player.getPosition().y+60);
-		game.batch.end();
+		//draw the HUD
+		hud.stage.draw();				
 	}
 	
 	protected void handleInput(float dt) {
@@ -169,8 +143,9 @@ public class PlayState implements Screen {
 			{
 				player.applyForceToCenter(550, 0, true);
 			}
-		} else {
-//			player.applyForceToCenter(0, -500, true);
+		}
+		if(Gdx.input.isKeyJustPressed(Keys.ESCAPE)){
+			game.setScreen(new MenuState(this.game));
 		}
 	}
 	
@@ -184,6 +159,10 @@ public class PlayState implements Screen {
 		//physics calculations
 		world.step(dt, 6, 2);
 		
+		if(player.getPosition().y > GreenTowerGame.V_HEIGHT/2 ){
+			//camPosYbefore = player.getPosition().y;
+			gamecam.position.set( GreenTowerGame.V_WIDTH / 2,player.getPosition().y ,0 );
+		}
 		//update the game camera
 		gamecam.update();
 		//render the game
@@ -223,6 +202,8 @@ public class PlayState implements Screen {
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
+		map.dispose();
+		world.dispose();
 		
 	}
 }
