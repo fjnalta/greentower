@@ -25,7 +25,7 @@ public class PlayState extends State{
 	public static final int TILES_HORIZONTAL = 20;
 	
 	private Player player;
-	private Texture bg;
+	//private Texture bg;
 	
 	//TODO: For testing purposes
 	private SpriteBatch batch;
@@ -44,7 +44,7 @@ public class PlayState extends State{
 		//create player
 		player = new Player(64,64);
 		//set background texture
-		bg = new Texture("bg.png");
+		//bg = new Texture("bg.png");
 		//only need one camera -> derive from state
 
 		font = new BitmapFont();
@@ -141,7 +141,7 @@ public class PlayState extends State{
 		//start packaging
 		sb.begin();
 		//draw background in the middle of the screen
-		sb.draw(bg, cam.position.x - cam.viewportWidth / 2, 0);
+		//sb.draw(bg, cam.position.x - cam.viewportWidth / 2, 0);
 		//draw the player
 		sb.draw(player.getTexture(), player.getPosition().x, player.getPosition().y);
 		//TODO: For testing purposes
