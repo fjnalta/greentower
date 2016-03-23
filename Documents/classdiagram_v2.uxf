@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.1.1">
+  <zoom_level>6</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>78</x>
+      <y>30</y>
+      <w>126</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>GreenTowerGame
+--
++WIDTH: final int
++HEIGHT final int
++TITLE: final String
+
++GameStateManager: gsm
+-SpriteBatch: batch
+--
++create(): void
++render(): void
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>378</x>
+      <y>30</y>
+      <w>132</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;abstract&gt;&gt;
+State
+--
+-cam: OrthographicCamera
+-mouse: Vector3
+-gsm: GameStateManager
+--
+*handleInput(): void
++update(): void
++render(sb: SpriteBatch): void
++dispose(): void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>534</x>
+      <y>240</y>
+      <w>156</w>
+      <h>162</h>
+    </coordinates>
+    <panel_attributes>Player
+--
++playerState: idle, jumping, running
+-GRAVITY: final int
+-MOVEMENT: final int
+
+-moveDirection: Vector3
+-position: Vector3
+-velocity: Vector3
+-player: Texture
+
+--
++update(): void
++getPosition(): Vector3
++getTexture(): Texture
++jump(): void
++setMoveDirection(): void
+-setPlayerState(): void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>240</x>
+      <y>30</y>
+      <w>102</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>GameStateManager
+--
+-states: Stack&lt;state&gt;
+--
++push(): void
++pop(): void
++peek(): void
++set(): void
++update(): void
++render(): void
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>342</x>
+      <y>162</y>
+      <w>102</w>
+      <h>42</h>
+    </coordinates>
+    <panel_attributes>MenuState
+--
+-background: Texture
+-playBtn: Texture</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>450</x>
+      <y>162</y>
+      <w>102</w>
+      <h>42</h>
+    </coordinates>
+    <panel_attributes>PlayState
+--
+-background: Texture
+-playBtn: Texture</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>774</x>
+      <y>408</y>
+      <w>72</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>Int32Point2D
+--
++x,y: int</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>480</x>
+      <y>702</y>
+      <w>144</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>Tile
+--
++Type: solid, nonsolid, platform
++type: Type
++texture: Texture
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>360</x>
+      <y>564</y>
+      <w>264</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>TileMap
+--
++width: int
++height: int
+-rows: List&lt;Tile[]&gt;
+--
++getSourroundingTiles(xPos: float, yPos: float, width:int): Tile[]
++getRow(y: int): Tile[]
++getRows(): List&lt;Tile[]&gt;
++getWidth(): int
++getHeight(): int</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>654</x>
+      <y>474</y>
+      <w>192</w>
+      <h>150</h>
+    </coordinates>
+    <panel_attributes>TileMapCamera
+--
+-mapWidth: int
+-mapHeight: int
+-tileSize: int
+-position: Int32Point2D
+--
++worldToScreen(worldx: int, worldy:int)
++screenToWorld(screenX: int, screenY: int)
++worldToTile(worldX: int, worldY: int)
++tileToWorld(tileX: int, tileY:int): Int32Point2D
++getPosition(): Int32Point2D
++setPosition(position: Int32Point2D): void
++getMapWidth(): int
++getMapHeight(): int
++getTileSize(): int</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>450</x>
+      <y>474</y>
+      <w>144</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>TileMapGenerator
+--
+-map: TileMap
+--
+-fillMap(): void
++replaceTopRowAtBottom(): void
+-generateRow(): Tile[]</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>198</x>
+      <y>60</y>
+      <w>54</w>
+      <h>18</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;70.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>336</x>
+      <y>60</y>
+      <w>54</w>
+      <h>18</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;70.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>384</x>
+      <y>120</y>
+      <w>72</w>
+      <h>54</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;.</panel_attributes>
+    <additional_attributes>100.0;10.0;100.0;40.0;10.0;40.0;10.0;70.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>438</x>
+      <y>120</y>
+      <w>72</w>
+      <h>54</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;.</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0;100.0;40.0;100.0;70.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>486</x>
+      <y>198</y>
+      <w>60</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;130.0;80.0;130.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>516</x>
+      <y>396</y>
+      <w>84</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>120.0;10.0;120.0;80.0;10.0;80.0;10.0;130.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>618</x>
+      <y>396</y>
+      <w>72</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;80.0;100.0;80.0;100.0;130.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>504</x>
+      <y>528</y>
+      <w>18</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>486</x>
+      <y>654</y>
+      <w>78</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;50.0;110.0;50.0;110.0;80.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>804</x>
+      <y>432</y>
+      <w>18</w>
+      <h>54</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;70.0;10.0;10.0</additional_attributes>
+  </element>
+</diagram>
