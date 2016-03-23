@@ -36,81 +36,80 @@ import com.greentower.TileMapGenerator;
 import com.greentower.sprites.Player;
 import com.greentower.sprites.Player.playerState;
 
-public class PlayState extends State{
-	
+public class PlayState extends State {
+
 	private static final int TILE_WIDTH = 64;
 	private static final int TILE_HEIGHT = 64;
 	public static final int TILES_HORIZONTAL = 20;
-	
+
 	private Player player;
-	//private Texture bg;
-	
-	//TODO: For testing purposes
+	// private Texture bg;
+
+	// TODO: For testing purposes
 	private SpriteBatch batch;
 	private BitmapFont font;
 	private OrthographicCamera cam;
-		
-	
+
 	private TmxMapLoader maploader;
 	private OrthogonalTiledMapRenderer renderer;
 	private TiledMap map;
-	
+
 	private List<Rectangle> listrect = new ArrayList<Rectangle>();
-	
-	//Box2d variables for physics and colliders
+
+	// Box2d variables for physics and colliders
 	private World world;
 	private Box2DDebugRenderer b2dr;
 
 	protected PlayState(GameStateManager gsm) {
-		super(gsm);	
-		//create player
-		player = new Player(64,64);
-		//set background texture
-		//bg = new Texture("bg.png");
-		//only need one camera -> derive from state
+		super(gsm);
+		// create player
+		player = new Player(64, 64);
+		// set background texture
+		// bg = new Texture("bg.png");
+		// only need one camera -> derive from state
 
 		font = new BitmapFont();
-		
-		//create the Map
+
+		// create the Map
 		createMap();
-		
+
 		cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		cam.position.set( GreenTowerGame.WIDTH / 2, GreenTowerGame.HEIGHT/2,0);
+		cam.position.set(GreenTowerGame.WIDTH / 2, GreenTowerGame.HEIGHT / 2, 0);
 		cam.update();
 	}
-	
-	private void createMap(){
+
+	private void createMap() {
 		maploader = new TmxMapLoader();
-		//load bottom map
+		// load bottom map
 		map = maploader.load("asd.tmx");
 		renderer = new OrthogonalTiledMapRenderer(map);
-		
+
 		world = new World(new Vector2(0, 0), true);
 		b2dr = new Box2DDebugRenderer();
-		
+
 		BodyDef bdef = new BodyDef();
 		PolygonShape shape = new PolygonShape();
 		FixtureDef fdef = new FixtureDef();
 		Body body;
-		
-		//import MapObjects
-		for(MapObject object: map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)){
-			
+
+		// import MapObjects
+		for (MapObject object : map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)) {
+
 			Rectangle rect = ((RectangleMapObject) object).getRectangle();
 			bdef.type = BodyDef.BodyType.StaticBody;
-			
-			bdef.position.set(rect.getX() + rect.getWidth() / 2, rect.getY() + rect.getHeight() /2);
-			
+
+			bdef.position.set(rect.getX() + rect.getWidth() / 2, rect.getY() + rect.getHeight() / 2);
+
 			body = world.createBody(bdef);
-			shape.setAsBox(rect.getWidth() / 2, rect.getHeight() /2);
-			
+			shape.setAsBox(rect.getWidth() / 2, rect.getHeight() / 2);
+
 			fdef.shape = shape;
 			body.createFixture(fdef);
-			
-			//Test
+
+			// Test
 			listrect.add(rect);
-		
-		}		
+
+		}
 	}
 
 	/**
@@ -119,128 +118,123 @@ public class PlayState extends State{
 	 */
 	@Override
 	protected void handleInput() {
-		if(Gdx.input.isKeyPressed(Keys.SPACE))
-		{
-			player.jump();
-		}
-		if(Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Keys.RIGHT)){
-			if(Gdx.input.isKeyPressed(Keys.LEFT))
-			{
-				player.setMoveDirection(new Vector3(-1,0,0));
+		if (Gdx.input.isKeyPressed(Keys.SPACE) || Gdx.input.isKeyPressed(Keys.LEFT)
+				|| Gdx.input.isKeyPressed(Keys.RIGHT)) {
+			if (Gdx.input.isKeyPressed(Keys.SPACE)) {
+				player.jump();
 			}
-			if(Gdx.input.isKeyPressed(Keys.RIGHT))
-			{
-				player.setMoveDirection(new Vector3(1,0,0));
+			if (Gdx.input.isKeyPressed(Keys.LEFT)) {
+				player.setMoveDirection(new Vector3(-1, 0, 0));
+			}
+			if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
+				player.setMoveDirection(new Vector3(1, 0, 0));
 			}
 		} else {
-			player.setMoveDirection(new Vector3(0,0,0));
+			player.setMoveDirection(new Vector3(0, 0, 0));
 		}
-		
 	}
-	
-//	protected void playerCollision() {
-//		Tile[] tiles = tilemap.getSurroundingTiles(player.getPosition().x, player.getPosition().y, 4);
-//		for(Tile tile : tiles) {
-//			player.
-//		}
-//	}
-	
-	
+
+	// protected void playerCollision() {
+	// Tile[] tiles = tilemap.getSurroundingTiles(player.getPosition().x,
+	// player.getPosition().y, 4);
+	// for(Tile tile : tiles) {
+	// player.
+	// }
+	// }
+
 	float camPosYbefore = 0;
+
 	/**
 	 * Updates the game logic.
 	 * 
-	 * @param delta the time since the last update call.
+	 * @param delta
+	 *            the time since the last update call.
 	 */
 	@Override
 	public void update(float dt) {
-		//always handle the input first
+		// always handle the input first
 		handleInput();
-		//then collision
-		world.step(1/60f, 6, 2);
-		//playerCollision();
-		//then everything else
+		// then collision
+		world.step(1 / 60f, 6, 2);
+		// playerCollision();
+		// then everything else
 		player.update(dt, this.listrect);
-		//update the camera position relative to the player
-		
-		if(player.getPosition().y > GreenTowerGame.HEIGHT/2 ){
-			//camPosYbefore = player.getPosition().y;
-			cam.position.set( GreenTowerGame.WIDTH / 2,player.getPosition().y ,0 );
-		}
-		//TODO - create new platforms here
-		
+		// update the camera position relative to the player
 
-		//update the camera
+		if (player.getPosition().y > GreenTowerGame.HEIGHT / 2) {
+			// camPosYbefore = player.getPosition().y;
+			//cam.position.set(GreenTowerGame.WIDTH / 2, player.getPosition().y, 0);
+		}
+		// TODO - create new platforms here
+
+		// update the camera
 		renderer.setView(cam);
 		cam.update();
 	}
 
-	
 	/**
 	 * Packages everything into a Spritebatch and renders it to the screen
 	 * 
-	 * @param sb Spritebatch
+	 * @param sb
+	 *            Spritebatch
 	 */
 	@Override
 	public void render(SpriteBatch sb) {
 		sb.setProjectionMatrix(cam.combined);
-		//draw tileMap
+		// draw tileMap
 		renderer.render();
-		//start packaging
+		// start packaging
 		sb.begin();
-		//draw background in the middle of the screen
-	//	sb.draw(bg, cam.position.x - cam.viewportWidth / 2, 0);
-		//draw the player
+		// draw background in the middle of the screen
+		// sb.draw(bg, cam.position.x - cam.viewportWidth / 2, 0);
+		// draw the player
 		sb.draw(player.getTexture(), player.getPosition().x, player.getPosition().y);
-		//TODO: For testing purposes
-		font.draw(sb, ""+player.state, player.getPosition().x+2, player.getPosition().y+20);
-		font.draw(sb, "VelX: "+(int)player.getVelocity().x, player.getPosition().x+2, player.getPosition().y+40);
-		font.draw(sb, "VelY: "+(int)player.getVelocity().y, player.getPosition().x+2, player.getPosition().y+60);
-		
-		//TODO - create Map
-		
+		// TODO: For testing purposes
+		font.draw(sb, "" + player.state, player.getPosition().x + 2, player.getPosition().y + 20);
+		font.draw(sb, "VelX: " + (int) player.getVelocity().x, player.getPosition().x + 2, player.getPosition().y + 40);
+		font.draw(sb, "VelY: " + (int) player.getVelocity().y, player.getPosition().x + 2, player.getPosition().y + 60);
+
+		// TODO - create Map
+
 		ShapeRenderer sh = new ShapeRenderer();
 		sh.setAutoShapeType(true);
 		sh.begin();
-		for(Rectangle rec : listrect){
-			sh.rect(rec.x,rec.y,rec.width,rec.height  );
+		for (Rectangle rec : listrect) {
+			sh.rect(rec.x, rec.y, rec.width, rec.height);
 		}
 		sh.end();
-		
-		
-		/*for(Platform platform : platforms)
-		{
-			spritebatch.draw(
-					imgPlatform,
-					platform.getRect().x,
-					platform.getRect().y,
-					platform.getRect().width,
-					platform.getRect().height);
-			
-		}*/
-		
-//		for(int y = 0; y < tilemap.getHeight(); y++)
-//		{
-//			Tile[] row = tilemap.getRow(y);
-//			
-//			for(int x = 0; x < tilemap.getWidth(); x++)
-//			{
-//				Tile tile = row[x];
-//				if(tile != null)
-//				{
-//					Int32Point2D worldPos = tileCamera.tileToWorld(x, y);
-//					Int32Point2D screenPos = tileCamera.screenToWorld(worldPos.x, worldPos.y);
-//				
-//					sb.draw(
-//					tile.texture,
-//					screenPos.x,
-//					screenPos.y,
-//					TILE_WIDTH,
-//					TILE_HEIGHT);
-//				}
-//			}
-//		}
-		
+
+		/*
+		 * for(Platform platform : platforms) { spritebatch.draw( imgPlatform,
+		 * platform.getRect().x, platform.getRect().y, platform.getRect().width,
+		 * platform.getRect().height);
+		 * 
+		 * }
+		 */
+
+		// for(int y = 0; y < tilemap.getHeight(); y++)
+		// {
+		// Tile[] row = tilemap.getRow(y);
+		//
+		// for(int x = 0; x < tilemap.getWidth(); x++)
+		// {
+		// Tile tile = row[x];
+		// if(tile != null)
+		// {
+		// Int32Point2D worldPos = tileCamera.tileToWorld(x, y);
+		// Int32Point2D screenPos = tileCamera.screenToWorld(worldPos.x,
+		// worldPos.y);
+		//
+		// sb.draw(
+		// tile.texture,
+		// screenPos.x,
+		// screenPos.y,
+		// TILE_WIDTH,
+		// TILE_HEIGHT);
+		// }
+		// }
+		// }
+
 		sb.end();
 	}
 
