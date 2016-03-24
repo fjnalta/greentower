@@ -1,7 +1,10 @@
 package com.greentower.states;
 
+import java.io.IOException;
+import java.util.Collections;
+
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.Input.TextInputListener;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -15,38 +18,35 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.greentower.GreenTowerGame;
 import com.greentower.data.Point;
 
-public class HighscoreState implements Screen {
+public class GameOverState implements Screen {
 	
 	private GreenTowerGame game;
 	private OrthographicCamera gamecam;
 	private Viewport gamePort;
 	private Stage stage;
 	
-	private Table highscoreTable;
+	private Table gameOverTable;
 	
-	public HighscoreState(GreenTowerGame game){
+	private String playerName;
+	
+	public GameOverState(GreenTowerGame game){
+		
 		this.game = game;
 		gamecam = new OrthographicCamera();
 		gamePort = new FitViewport(GreenTowerGame.V_WIDTH, GreenTowerGame.V_HEIGHT, gamecam);
 		stage = new Stage(gamePort, ((GreenTowerGame) game).batch);
 		
 		Label.LabelStyle font = new Label.LabelStyle(new BitmapFont(), Color.WHITE);
-		highscoreTable = new Table();
-		highscoreTable.center();
-		highscoreTable.setFillParent(true);
+		gameOverTable = new Table();
+		gameOverTable.center();
+		gameOverTable.setFillParent(true);
 		
-		Label headLine = new Label("HIGHSCORES", font);
+		Label headLine = new Label("GAME OVER", font);
 		
-		highscoreTable.add(headLine);
-		highscoreTable.row();
+		gameOverTable.add(headLine);
+		gameOverTable.row();
 		
-		for (Point p : GreenTowerGame.score.getScores()){
-			Label tempLabel = new Label(p.toString(), font);
-			highscoreTable.add(tempLabel);
-			highscoreTable.row();
-		}
-		
-		stage.addActor(highscoreTable);
+		enterPlayername(game);
 	}
 
 	@Override
@@ -55,10 +55,8 @@ public class HighscoreState implements Screen {
 		
 	}
 	
-	private void handleInput(){
-		if(Gdx.input.isKeyJustPressed(Keys.ESCAPE)){
-			game.setScreen(new MenuState(this.game));
-		}
+	public void handleInput(){
+		
 	}
 	
 	public void update(float dt){
@@ -74,11 +72,11 @@ public class HighscoreState implements Screen {
 		
 		stage.draw();
 	}
-
+	
 	@Override
 	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
-		
+		//update when the window is resized
+		gamePort.update(width, height);
 	}
 
 	@Override
@@ -102,5 +100,29 @@ public class HighscoreState implements Screen {
 	@Override
 	public void dispose() {
 		stage.dispose();
+		
 	}
+	
+	
+	private void enterPlayername(GreenTowerGame game) {
+		Gdx.input.getTextInput(new TextInputListener() {
+			@Override
+			public void input(String text) {
+				GreenTowerGame.score.getScores().add(new Point(text, 100));
+				Collections.sort(GreenTowerGame.score.getScores());
+				try {
+					GreenTowerGame.score.saveScore();
+				} catch (IOException e) {
+
+				}
+			}
+
+
+			@Override
+			public void canceled() {
+				playerName = "cancled by user";
+			}
+		}, "Enter your name", "here", "Enter name -> Press R");
+	}
+
 }
