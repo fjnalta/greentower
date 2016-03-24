@@ -10,7 +10,6 @@ public class DesktopLauncher {
 		
 		config.title = GreenTowerGame.TITLE;
 		
-		
 		new LwjglApplication(new GreenTowerGame(), config);
 	}
 }
