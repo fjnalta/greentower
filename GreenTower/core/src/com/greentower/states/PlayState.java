@@ -1,17 +1,10 @@
 package com.greentower.states;
 
-import java.text.Format;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -19,228 +12,203 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.ui.Value.Fixed;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.greentower.GreenTowerGame;
-import com.greentower.Int32Point2D;
-import com.greentower.Tile;
-import com.greentower.TileMap;
-import com.greentower.TileMapCamera;
-import com.greentower.TileMapGenerator;
-import com.greentower.sprites.Player;
-import com.greentower.sprites.Player.playerState;
+import com.greentower.Hud;
 
-public class PlayState extends State {
-
-	private static final int TILE_WIDTH = 64;
-	private static final int TILE_HEIGHT = 64;
-	public static final int TILES_HORIZONTAL = 20;
-
-	private Player player;
-	// private Texture bg;
-
-	// TODO: For testing purposes
-	private SpriteBatch batch;
-	private BitmapFont font;
-	private OrthographicCamera cam;
-
+public class PlayState implements Screen {
+	
+	private static final float PIXEL_PER_METER = 100f;
+	
+	private GreenTowerGame game;
+	private OrthographicCamera gamecam;
+	private Viewport gamePort;
+	private Hud hud;
+	
+	//Player
+	private Body player;
+	
+	//Tiled Map
 	private TmxMapLoader maploader;
 	private OrthogonalTiledMapRenderer renderer;
 	private TiledMap map;
-
-	private List<Rectangle> listrect = new ArrayList<Rectangle>();
-
-	// Box2d variables for physics and colliders
+	
+	//Box2d Physics
 	private World world;
 	private Box2DDebugRenderer b2dr;
 
-	protected PlayState(GameStateManager gsm) {
-		super(gsm);
-		// create player
-		player = new Player(64, 64);
-		// set background texture
-		// bg = new Texture("bg.png");
-		// only need one camera -> derive from state
-
-		font = new BitmapFont();
-
-		// create the Map
+	public PlayState(GreenTowerGame game){
+		this.game = game;
+		gamecam = new OrthographicCamera();
+		gamePort = new FitViewport(GreenTowerGame.V_WIDTH, GreenTowerGame.V_HEIGHT, gamecam);
+		hud = new Hud(game.batch);
+		//create the TileMap
 		createMap();
-
-		cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		cam.position.set(GreenTowerGame.WIDTH / 2, GreenTowerGame.HEIGHT / 2, 0);
-		cam.update();
-	}
-
-	private void createMap() {
-		maploader = new TmxMapLoader();
-		// load bottom map
-		map = maploader.load("asd.tmx");
-		renderer = new OrthogonalTiledMapRenderer(map);
-
-		world = new World(new Vector2(0, 0), true);
+		//center the camera around the viewport
+		gamecam.position.set(gamePort.getScreenWidth() / 2, gamePort.getScreenHeight() / 2, 0);
+	
+		//BOX2dPhysics
+		//Create the physics world
+		world = new World(new Vector2(0, -9.81f), true);
+		
+		//create player
+		player = createPlayer();
+		//add bodies to the world
+		createColliders();
+		//TODO - Debug Renderer
 		b2dr = new Box2DDebugRenderer();
-
+	}
+	
+	private Body createPlayer() {
+		BodyDef def = new BodyDef();
+		def.position.set(100, 100);
+		def.type = BodyType.DynamicBody;
+		Body box = world.createBody(def);
+		box.setGravityScale(2f);
+		PolygonShape shape = new PolygonShape();
+		shape.setAsBox(10, 10);
+		FixtureDef fdef = new FixtureDef();
+		fdef.shape = shape;
+		box.createFixture(fdef);
+		return box;
+}
+	
+	private void createColliders(){
 		BodyDef bdef = new BodyDef();
 		PolygonShape shape = new PolygonShape();
+		//define fixture first
 		FixtureDef fdef = new FixtureDef();
+		//define body
 		Body body;
-
-		// import MapObjects
-		for (MapObject object : map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)) {
-
+		
+		//import MapObjects
+		for(MapObject object: map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)){
+			
 			Rectangle rect = ((RectangleMapObject) object).getRectangle();
 			bdef.type = BodyDef.BodyType.StaticBody;
-
-			bdef.position.set(rect.getX() + rect.getWidth() / 2, rect.getY() + rect.getHeight() / 2);
-
+			
+			bdef.position.set(rect.getX() + rect.getWidth() / 2, rect.getY() + rect.getHeight() /2);
+			
 			body = world.createBody(bdef);
 			shape.setAsBox(rect.getWidth() / 2, rect.getHeight() / 2);
-
+			
 			fdef.shape = shape;
 			body.createFixture(fdef);
-
-			// Test
-			listrect.add(rect);
-
 		}
 	}
+	
+	@Override
+	public void show() {
+		// TODO Auto-generated method stub
+		
+	}
 
+	@Override
+	public void render(float delta) {
+		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		update(delta);
+		//wipe the screen
+		
+		game.batch.setProjectionMatrix(gamecam.combined);
+		
+		//only draw what can be seen
+		game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
+		//render the TileMap
+		renderer.render();
+		//render DEBUG
+		b2dr.render(world, gamecam.combined);
+		//center the Play screen around the Viewport
+		gamecam.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);
+		//draw the HUD
+		hud.stage.draw();				
+	}
+	
+	protected void handleInput(float dt) {
+		if(Gdx.input.isKeyPressed(Keys.SPACE))
+		{
+			if(player.getLinearVelocity().y == 0)
+				//player.applyForceToCenter(0, 10000f, true);
+				player.setLinearVelocity(player.getLinearVelocity().x, 200000f);
+		}
+		if(Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Keys.RIGHT)){
+			if(Gdx.input.isKeyPressed(Keys.LEFT))
+			{
+				player.applyForceToCenter(-550, 0, true);
+			}
+			if(Gdx.input.isKeyPressed(Keys.RIGHT))
+			{
+				player.applyForceToCenter(550, 0, true);
+			}
+		}
+		if(Gdx.input.isKeyJustPressed(Keys.ESCAPE)){
+			game.setScreen(new MenuState(this.game));
+		}
+	}
+	
 	/**
 	 * Handling all the Player inputs here
 	 * 
 	 */
-	@Override
-	protected void handleInput() {
-		if (Gdx.input.isKeyPressed(Keys.SPACE) || Gdx.input.isKeyPressed(Keys.LEFT)
-				|| Gdx.input.isKeyPressed(Keys.RIGHT)) {
-			if (Gdx.input.isKeyPressed(Keys.SPACE)) {
-				player.jump();
-			}
-			if (Gdx.input.isKeyPressed(Keys.LEFT)) {
-				player.setMoveDirection(new Vector3(-1, 0, 0));
-			}
-			if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
-				player.setMoveDirection(new Vector3(1, 0, 0));
-			}
-		} else {
-			player.setMoveDirection(new Vector3(0, 0, 0));
+	public void update(float dt){
+		handleInput(dt);
+		
+		//physics calculations
+		world.step(dt, 6, 2);
+		
+		if(player.getPosition().y > GreenTowerGame.V_HEIGHT/2 ){
+			//camPosYbefore = player.getPosition().y;
+			gamecam.position.set( GreenTowerGame.V_WIDTH / 2,player.getPosition().y ,0 );
 		}
+		//update the game camera
+		gamecam.update();
+		//render the game
+		renderer.setView(gamecam);
+	}
+	
+	private void createMap(){
+		maploader = new TmxMapLoader();
+		map = maploader.load("SciFiStage.tmx");
+		renderer = new OrthogonalTiledMapRenderer(map);		
 	}
 
-	// protected void playerCollision() {
-	// Tile[] tiles = tilemap.getSurroundingTiles(player.getPosition().x,
-	// player.getPosition().y, 4);
-	// for(Tile tile : tiles) {
-	// player.
-	// }
-	// }
-
-	float camPosYbefore = 0;
-
-	/**
-	 * Updates the game logic.
-	 * 
-	 * @param delta
-	 *            the time since the last update call.
-	 */
 	@Override
-	public void update(float dt) {
-		// always handle the input first
-		handleInput();
-		// then collision
-		world.step(1 / 60f, 6, 2);
-		// playerCollision();
-		// then everything else
-		player.update(dt, this.listrect);
-		// update the camera position relative to the player
-
-		if (player.getPosition().y > GreenTowerGame.HEIGHT / 2) {
-			// camPosYbefore = player.getPosition().y;
-			//cam.position.set(GreenTowerGame.WIDTH / 2, player.getPosition().y, 0);
-		}
-		// TODO - create new platforms here
-
-		// update the camera
-		renderer.setView(cam);
-		cam.update();
+	public void resize(int width, int height) {
+		//update when the window is resized
+		gamePort.update(width, height);
 	}
 
-	/**
-	 * Packages everything into a Spritebatch and renders it to the screen
-	 * 
-	 * @param sb
-	 *            Spritebatch
-	 */
 	@Override
-	public void render(SpriteBatch sb) {
-		sb.setProjectionMatrix(cam.combined);
-		// draw tileMap
-		renderer.render();
-		// start packaging
-		sb.begin();
-		// draw background in the middle of the screen
-		// sb.draw(bg, cam.position.x - cam.viewportWidth / 2, 0);
-		// draw the player
-		sb.draw(player.getTexture(), player.getPosition().x, player.getPosition().y);
-		// TODO: For testing purposes
-		font.draw(sb, "" + player.state, player.getPosition().x + 2, player.getPosition().y + 20);
-		font.draw(sb, "VelX: " + (int) player.getVelocity().x, player.getPosition().x + 2, player.getPosition().y + 40);
-		font.draw(sb, "VelY: " + (int) player.getVelocity().y, player.getPosition().x + 2, player.getPosition().y + 60);
+	public void pause() {
+		// TODO Auto-generated method stub
+		
+	}
 
-		// TODO - create Map
+	@Override
+	public void resume() {
+		// TODO Auto-generated method stub
+		
+	}
 
-		ShapeRenderer sh = new ShapeRenderer();
-		sh.setAutoShapeType(true);
-		sh.begin();
-		for (Rectangle rec : listrect) {
-			sh.rect(rec.x, rec.y, rec.width, rec.height);
-		}
-		sh.end();
-
-		/*
-		 * for(Platform platform : platforms) { spritebatch.draw( imgPlatform,
-		 * platform.getRect().x, platform.getRect().y, platform.getRect().width,
-		 * platform.getRect().height);
-		 * 
-		 * }
-		 */
-
-		// for(int y = 0; y < tilemap.getHeight(); y++)
-		// {
-		// Tile[] row = tilemap.getRow(y);
-		//
-		// for(int x = 0; x < tilemap.getWidth(); x++)
-		// {
-		// Tile tile = row[x];
-		// if(tile != null)
-		// {
-		// Int32Point2D worldPos = tileCamera.tileToWorld(x, y);
-		// Int32Point2D screenPos = tileCamera.screenToWorld(worldPos.x,
-		// worldPos.y);
-		//
-		// sb.draw(
-		// tile.texture,
-		// screenPos.x,
-		// screenPos.y,
-		// TILE_WIDTH,
-		// TILE_HEIGHT);
-		// }
-		// }
-		// }
-
-		sb.end();
+	@Override
+	public void hide() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
+		map.dispose();
+		world.dispose();
+		
 	}
-
 }
