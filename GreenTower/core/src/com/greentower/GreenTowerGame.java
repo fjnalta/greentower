@@ -1,7 +1,10 @@
 package com.greentower;
 
+import java.io.IOException;
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.greentower.data.Highscore;
 import com.greentower.states.MenuState;
 
 public class GreenTowerGame extends Game {
@@ -13,6 +16,8 @@ public class GreenTowerGame extends Game {
 	public static final int PPM = 100;
 	
 	public static final String TITLE = "Green Tower";
+	
+	public static Highscore score;
 
 	//all screens using this batch
 	public SpriteBatch batch;
@@ -20,6 +25,14 @@ public class GreenTowerGame extends Game {
 	@Override
 	public void create() {
 		batch = new SpriteBatch();
+		
+		try {
+			score = new Highscore();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		setScreen(new MenuState(this));
 	}
 	
