@@ -1,9 +1,17 @@
 package com.greentower.sprites;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.greentower.GreenTowerGame;
+import com.greentower.states.PlayState;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 public class Player extends Sprite {
 	
@@ -24,12 +32,24 @@ public class Player extends Sprite {
 	public Vector3 position;
 	private Vector3 velocity;
 	
-	private Texture player;
+//	private Body player;
 	
 	public Player(World world){
+		
 		position = new Vector3(64, 64, 0);
 		velocity = new Vector3(0, 0, 0);
-		player = new Texture("player.png");
+//		player = new Texture("player.png");
+		
+		BodyDef def = new BodyDef();
+		def.position.set(100, 100);
+		def.type = BodyType.DynamicBody;
+		Body box = world.createBody(def);
+		box.setGravityScale(2f);
+		PolygonShape shape = new PolygonShape();
+		shape.setAsBox(5, 5);
+		FixtureDef fdef = new FixtureDef();
+		fdef.shape = shape;
+		box.createFixture(fdef);
 	}
 	
 	public void update(float dt){
@@ -54,7 +74,7 @@ public class Player extends Sprite {
 				velocity.x += (moveDirection.x * MOVEMENT * dt)/40;
 		}
 		else
-			velocity.x = moveDirection.x * MOVEMENT * dt;
+			PlayState.player.setMoveDirection(new Vector3(MOVEMENT * dt,0,0));
 		
 		//add velocity to the player position
 		position.add(velocity.x, velocity.y, 0);
@@ -65,10 +85,10 @@ public class Player extends Sprite {
 	public Vector3 getPosition() {
 		return position;
 	}
-
-	public Texture getTexture() {
-		return player;
-	}
+//
+//	public Texture getTexture() {
+//		return player;
+//	}
 	
 	public Vector3 getVelocity() {
 		return velocity;
@@ -82,6 +102,10 @@ public class Player extends Sprite {
 	
 	public void setMoveDirection(Vector3 dir){
 		this.moveDirection = dir;
+	}
+	
+	public Vector3 getMoveDirection(){
+		return this.moveDirection;
 	}
 	
 	private void setPlayerState(){

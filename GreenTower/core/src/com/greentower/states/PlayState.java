@@ -23,10 +23,9 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.greentower.GreenTowerGame;
 import com.greentower.Hud;
+import com.greentower.sprites.Player;
 
 public class PlayState implements Screen {
-	
-	private static final float PIXEL_PER_METER = 100f;
 	
 	private GreenTowerGame game;
 	private OrthographicCamera gamecam;
@@ -34,7 +33,7 @@ public class PlayState implements Screen {
 	private Hud hud;
 	
 	//Player
-	private Body player;
+	public Body player;
 	
 	//Tiled Map
 	private TmxMapLoader maploader;
@@ -48,7 +47,7 @@ public class PlayState implements Screen {
 	public PlayState(GreenTowerGame game){
 		this.game = game;
 		gamecam = new OrthographicCamera();
-		gamePort = new FitViewport(GreenTowerGame.V_WIDTH, GreenTowerGame.V_HEIGHT, gamecam);
+		gamePort = new FitViewport(GreenTowerGame.V_WIDTH / GreenTowerGame.PPM, GreenTowerGame.V_HEIGHT / GreenTowerGame.PPM, gamecam);
 		hud = new Hud(game.batch);
 		//create the TileMap
 		createMap();
@@ -57,7 +56,7 @@ public class PlayState implements Screen {
 	
 		//BOX2dPhysics
 		//Create the physics world
-		world = new World(new Vector2(0, -9.81f), true);
+		world = new World(new Vector2(0, -100f), true);
 		
 		//create player
 		player = createPlayer();
@@ -69,12 +68,12 @@ public class PlayState implements Screen {
 	
 	private Body createPlayer() {
 		BodyDef def = new BodyDef();
-		def.position.set(100, 100);
+		def.position.set(32, 32);
 		def.type = BodyType.DynamicBody;
 		Body box = world.createBody(def);
 		box.setGravityScale(2f);
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(10, 10);
+		shape.setAsBox(1, 1);
 		FixtureDef fdef = new FixtureDef();
 		fdef.shape = shape;
 		box.createFixture(fdef);
@@ -95,10 +94,10 @@ public class PlayState implements Screen {
 			Rectangle rect = ((RectangleMapObject) object).getRectangle();
 			bdef.type = BodyDef.BodyType.StaticBody;
 			
-			bdef.position.set(rect.getX() + rect.getWidth() / 2, rect.getY() + rect.getHeight() /2);
+			bdef.position.set((rect.getX() + rect.getWidth() / 2) / GreenTowerGame.PPM, (rect.getY() + rect.getHeight() /2) / GreenTowerGame.PPM);
 			
 			body = world.createBody(bdef);
-			shape.setAsBox(rect.getWidth() / 2, rect.getHeight() / 2);
+			shape.setAsBox((rect.getWidth() / 2) / GreenTowerGame.PPM, (rect.getHeight() / 2) / GreenTowerGame.PPM);
 			
 			fdef.shape = shape;
 			body.createFixture(fdef);
@@ -136,21 +135,22 @@ public class PlayState implements Screen {
 		if(Gdx.input.isKeyPressed(Keys.SPACE))
 		{
 			if(player.getLinearVelocity().y == 0)
-				//player.applyForceToCenter(0, 10000f, true);
-				player.setLinearVelocity(player.getLinearVelocity().x, 200000f);
+				player.setLinearVelocity(player.getLinearVelocity().x, 100f);
 		}
 		if(Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Keys.RIGHT)){
 			if(Gdx.input.isKeyPressed(Keys.LEFT))
 			{
-				player.applyForceToCenter(-550, 0, true);
+				player.applyForceToCenter(-800f, 0f, true);
 			}
 			if(Gdx.input.isKeyPressed(Keys.RIGHT))
 			{
-				player.applyForceToCenter(550, 0, true);
+				player.applyForceToCenter(800f, 0f, true);
 			}
 		}
 		if(Gdx.input.isKeyJustPressed(Keys.ESCAPE)){
 			game.setScreen(new MenuState(this.game));
+		} else {
+			player.setLinearVelocity(0, player.getLinearVelocity().y);
 		}
 	}
 	
@@ -160,13 +160,17 @@ public class PlayState implements Screen {
 	 */
 	public void update(float dt){
 		handleInput(dt);
+		//update player physics
+		
 		
 		//physics calculations
 		world.step(dt, 6, 2);
+//		System.out.println(player.getPosition().y);
+//		System.out.println((GreenTowerGame.V_HEIGHT/2) / GreenTowerGame.PPM);
 		
-		if(player.getPosition().y > GreenTowerGame.V_HEIGHT/2 ){
+		if(player.getPosition().y > (GreenTowerGame.V_HEIGHT/2)  / GreenTowerGame.PPM) {
 			//camPosYbefore = player.getPosition().y;
-			gamecam.position.set( GreenTowerGame.V_WIDTH / 2,player.getPosition().y ,0 );
+			gamecam.position.set((GreenTowerGame.V_WIDTH / 2)  / GreenTowerGame.PPM, player.getPosition().y, 0);
 		}
 		//update the game camera
 		gamecam.update();
@@ -177,7 +181,7 @@ public class PlayState implements Screen {
 	private void createMap(){
 		maploader = new TmxMapLoader();
 		map = maploader.load("SciFiStage.tmx");
-		renderer = new OrthogonalTiledMapRenderer(map);		
+		renderer = new OrthogonalTiledMapRenderer(map,1 / GreenTowerGame.PPM);		
 	}
 
 	@Override
