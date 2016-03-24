@@ -9,6 +9,7 @@ import com.greentower.states.MenuState;
 
 public class GreenTowerGame extends Game {
 	
+	
 	//virtual width and height for the game
 	public static final int V_WIDTH = 20*32;
 	public static final int V_HEIGHT = 30*32;
