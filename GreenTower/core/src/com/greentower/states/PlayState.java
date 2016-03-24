@@ -14,7 +14,6 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
@@ -33,7 +32,7 @@ public class PlayState implements Screen {
 	private Hud hud;
 	
 	//Player
-	public Body player;
+	public Player player;
 	
 	//Tiled Map
 	private TmxMapLoader maploader;
@@ -41,7 +40,7 @@ public class PlayState implements Screen {
 	private TiledMap map;
 	
 	//Box2d Physics
-	private World world;
+	public static World world;
 	private Box2DDebugRenderer b2dr;
 
 	public PlayState(GreenTowerGame game){
@@ -59,26 +58,12 @@ public class PlayState implements Screen {
 		world = new World(new Vector2(0, -100f), true);
 		
 		//create player
-		player = createPlayer();
+		player = new Player();
 		//add bodies to the world
 		createColliders();
 		//TODO - Debug Renderer
 		b2dr = new Box2DDebugRenderer();
 	}
-	
-	private Body createPlayer() {
-		BodyDef def = new BodyDef();
-		def.position.set(32, 32);
-		def.type = BodyType.DynamicBody;
-		Body box = world.createBody(def);
-		box.setGravityScale(2f);
-		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(1, 1);
-		FixtureDef fdef = new FixtureDef();
-		fdef.shape = shape;
-		box.createFixture(fdef);
-		return box;
-}
 	
 	private void createColliders(){
 		BodyDef bdef = new BodyDef();
@@ -134,23 +119,23 @@ public class PlayState implements Screen {
 	protected void handleInput(float dt) {
 		if(Gdx.input.isKeyPressed(Keys.SPACE))
 		{
-			if(player.getLinearVelocity().y == 0)
-				player.setLinearVelocity(player.getLinearVelocity().x, 100f);
+			if(player.getBody().getLinearVelocity().y == 0)
+				player.getBody().setLinearVelocity(player.getBody().getLinearVelocity().x, 100f);
 		}
 		if(Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Keys.RIGHT)){
 			if(Gdx.input.isKeyPressed(Keys.LEFT))
 			{
-				player.applyForceToCenter(-800f, 0f, true);
+				player.getBody().applyForceToCenter(-800f, 0f, true);
 			}
 			if(Gdx.input.isKeyPressed(Keys.RIGHT))
 			{
-				player.applyForceToCenter(800f, 0f, true);
+				player.getBody().applyForceToCenter(800f, 0f, true);
 			}
 		}
 		if(Gdx.input.isKeyJustPressed(Keys.ESCAPE)){
 			game.setScreen(new MenuState(this.game));
 		} else {
-			player.setLinearVelocity(0, player.getLinearVelocity().y);
+			player.getBody().setLinearVelocity(0, player.getBody().getLinearVelocity().y);
 		}
 	}
 	
@@ -165,12 +150,9 @@ public class PlayState implements Screen {
 		
 		//physics calculations
 		world.step(dt, 6, 2);
-//		System.out.println(player.getPosition().y);
-//		System.out.println((GreenTowerGame.V_HEIGHT/2) / GreenTowerGame.PPM);
-		
-		if(player.getPosition().y > (GreenTowerGame.V_HEIGHT/2)  / GreenTowerGame.PPM) {
-			//camPosYbefore = player.getPosition().y;
-			gamecam.position.set((GreenTowerGame.V_WIDTH / 2)  / GreenTowerGame.PPM, player.getPosition().y, 0);
+		//move camera with player
+		if(player.getBody().getPosition().y > (GreenTowerGame.V_HEIGHT/2)  / GreenTowerGame.PPM) {
+			gamecam.position.set((GreenTowerGame.V_WIDTH / 2)  / GreenTowerGame.PPM, player.getBody().getPosition().y, 0);
 		}
 		//update the game camera
 		gamecam.update();
@@ -213,6 +195,5 @@ public class PlayState implements Screen {
 		// TODO Auto-generated method stub
 		map.dispose();
 		world.dispose();
-		
 	}
 }
