@@ -16,11 +16,11 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.greentower.GreenTowerGame;
 
 /**
- * This Class representation the MainMenu. First du have to press Space, and
+ * This Class representation the MainMenu. First du have to press Enter, and
  * then you can choice between start game and highscorelist. Start game -> start
  * the game highscorelist -> show the Highscore
  * 
- * @author Yangus
+ * @author Ahmed
  *
  */
 public class MenuState implements Screen {
@@ -77,8 +77,7 @@ public class MenuState implements Screen {
 
 		game.batch.begin();
 		game.batch.draw(titleText, (GreenTowerGame.V_WIDTH / 2) - (titleText.getWidth() / 2), (GreenTowerGame.V_HEIGHT) - (titleText.getHeight()));
-		game.batch.end();		
-		
+		game.batch.end();			
 		
 		stage.draw();
 	}

@@ -160,7 +160,7 @@ public class PlayState implements Screen {
 	 */
 	public void update(float dt){
 		handleInput(dt);
-		
+		this.hud.update();
 		//physics calculations
 		world.step(dt, 6, 2);
 		
