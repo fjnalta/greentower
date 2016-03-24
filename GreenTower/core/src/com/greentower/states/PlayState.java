@@ -26,6 +26,8 @@ import com.greentower.Hud;
 
 public class PlayState implements Screen {
 	
+	private static final float PIXEL_PER_METER = 100f;
+	
 	private GreenTowerGame game;
 	private OrthographicCamera gamecam;
 	private Viewport gamePort;
@@ -67,9 +69,10 @@ public class PlayState implements Screen {
 	
 	private Body createPlayer() {
 		BodyDef def = new BodyDef();
-		def.position.set(100,100);
+		def.position.set(100, 100);
 		def.type = BodyType.DynamicBody;
 		Body box = world.createBody(def);
+		box.setGravityScale(2f);
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(10, 10);
 		FixtureDef fdef = new FixtureDef();
@@ -132,7 +135,9 @@ public class PlayState implements Screen {
 	protected void handleInput(float dt) {
 		if(Gdx.input.isKeyPressed(Keys.SPACE))
 		{
-			player.applyForceToCenter(0, 500, true);
+			if(player.getLinearVelocity().y == 0)
+				//player.applyForceToCenter(0, 10000f, true);
+				player.setLinearVelocity(player.getLinearVelocity().x, 200000f);
 		}
 		if(Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Keys.RIGHT)){
 			if(Gdx.input.isKeyPressed(Keys.LEFT))
