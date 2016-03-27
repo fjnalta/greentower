@@ -36,4 +36,11 @@ public class Hud {
 		//add the table to the stage
 		stage.addActor(table);
 	}
+	
+	public void update(float deltaTime)
+	{
+		timeCount += deltaTime;
+		
+		timeLabel.setText("TIME: " + String.format("%.2f", timeCount));
+	}
 }

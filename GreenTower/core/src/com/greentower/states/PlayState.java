@@ -158,6 +158,8 @@ public class PlayState implements Screen {
 		gamecam.update();
 		//render the game
 		renderer.setView(gamecam);
+		
+		hud.update(dt);
 	}
 	
 	private void createMap(){
