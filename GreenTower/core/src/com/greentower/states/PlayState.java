@@ -1,5 +1,8 @@
 package com.greentower.states;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
@@ -10,6 +13,7 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -42,7 +46,10 @@ public class PlayState implements Screen {
 	//Box2d Physics
 	public static World world;
 	private Box2DDebugRenderer b2dr;
+	
+	private List<Rectangle> goalRects;
 
+	
 	public PlayState(GreenTowerGame game){
 		this.game = game;
 		gamecam = new OrthographicCamera();
@@ -70,23 +77,31 @@ public class PlayState implements Screen {
 		PolygonShape shape = new PolygonShape();
 		//define fixture first
 		FixtureDef fdef = new FixtureDef();
-		//define body
-		Body body;
 		
 		//import MapObjects
-		for(MapObject object: map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)){
+		for(MapObject object: map.getLayers().get("platform").getObjects().getByType(RectangleMapObject.class)){
 			
 			Rectangle rect = ((RectangleMapObject) object).getRectangle();
 			bdef.type = BodyDef.BodyType.StaticBody;
 			
 			bdef.position.set((rect.getX() + rect.getWidth() / 2) / GreenTowerGame.PPM, (rect.getY() + rect.getHeight() /2) / GreenTowerGame.PPM);
 			
-			body = world.createBody(bdef);
+			Body body = world.createBody(bdef);
 			shape.setAsBox((rect.getWidth() / 2) / GreenTowerGame.PPM, (rect.getHeight() / 2) / GreenTowerGame.PPM);
 			
 			fdef.shape = shape;
 			body.createFixture(fdef);
 		}
+		
+		//import goal rectangles
+		goalRects = new ArrayList<Rectangle>();
+		for(MapObject object : map.getLayers().get("goal").getObjects().getByType(RectangleMapObject.class))
+		{
+			Rectangle rect = ((RectangleMapObject) object).getRectangle();
+			
+			goalRects.add(rect);
+		}
+		
 	}
 	
 	@Override
@@ -133,7 +148,7 @@ public class PlayState implements Screen {
 			}
 		}
 		if(Gdx.input.isKeyJustPressed(Keys.ESCAPE)){
-			game.setScreen(new MenuState(this.game));
+			backToMenu();
 		} else {
 			player.getBody().setLinearVelocity(0, player.getBody().getLinearVelocity().y);
 		}
@@ -144,9 +159,8 @@ public class PlayState implements Screen {
 	 * 
 	 */
 	public void update(float dt){
-		handleInput(dt);
-		//update player physics
 		
+		handleInput(dt);
 		
 		//physics calculations
 		world.step(dt, 6, 2);
@@ -159,7 +173,38 @@ public class PlayState implements Screen {
 		//render the game
 		renderer.setView(gamecam);
 		
+		if(checkForGoalCollision())
+			onGoalReached();
+		
+		
 		hud.update(dt);
+	}
+	
+	/**
+	 * Checks whether the player has reached the goal.
+	 * @return
+	 */
+	private boolean checkForGoalCollision()
+	{
+		Rectangle playerRect = player.getPlayerRect();
+		
+		for(Rectangle rect : goalRects)
+		{
+			if(Intersector.intersectRectangles(playerRect, rect, new Rectangle()))
+				return true;
+		}
+		
+		return false;
+	}
+	
+	private void onGoalReached()
+	{
+		backToMenu();
+	}
+	
+	private void backToMenu()
+	{
+		game.setScreen(new MenuState(this.game)); //exit screen
 	}
 	
 	private void createMap(){
