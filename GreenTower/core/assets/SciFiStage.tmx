@@ -157,7 +157,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <layer name="platform" width="20" height="150">
+ <layer name="platform_tiles" width="20" height="150">
   <data encoding="csv">
 771,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,771,
 771,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,771,
