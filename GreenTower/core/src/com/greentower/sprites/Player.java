@@ -1,9 +1,11 @@
 package com.greentower.sprites;
 
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.greentower.GreenTowerGame;
 import com.greentower.states.PlayState;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
@@ -11,6 +13,9 @@ public class Player {
 
 	//set initial playerState
 //	public playerState state;
+	
+	private static final float HITBOX_WIDTH = 32f;
+	private static final float HITBOX_HEIGHT = 32f;
 	
 	private BodyDef def;
 	private Body box;
@@ -32,6 +37,15 @@ public class Player {
 	
 	public Body getBody(){
 		return box;
+	}
+	
+	public Rectangle getPlayerRect()
+	{
+		return new Rectangle(
+				box.getPosition().x * GreenTowerGame.PPM,
+				box.getPosition().y * GreenTowerGame.PPM,
+				HITBOX_WIDTH,
+				HITBOX_HEIGHT);
 	}
 	
 	//playerStates for handling animations and prevent multiple jumping
