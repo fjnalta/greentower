@@ -92,7 +92,7 @@ public class MenuState implements Screen {
 			game.setScreen(new HighscoreState(this.game));
 		}
 		if ((wannaPlay) && Gdx.input.isKeyJustPressed(Keys.ENTER)) {
-			game.setScreen(new PlayState(this.game));
+			game.setScreen(new PlayState(this.game, "SciFiStage"));
 		}
 		if (Gdx.input.isKeyJustPressed(Keys.UP)){
 			if(!wannaPlay){

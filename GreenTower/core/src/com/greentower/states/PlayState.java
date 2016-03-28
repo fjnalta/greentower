@@ -49,9 +49,13 @@ public class PlayState implements Screen {
 	
 	private List<Rectangle> goalRects;
 
+	private String levelName;
 	
-	public PlayState(GreenTowerGame game){
+	public PlayState(GreenTowerGame game, String levelName){
+		
 		this.game = game;
+		this.levelName = levelName;
+				
 		gamecam = new OrthographicCamera();
 		gamePort = new FitViewport(GreenTowerGame.V_WIDTH / GreenTowerGame.PPM, GreenTowerGame.V_HEIGHT / GreenTowerGame.PPM, gamecam);
 		hud = new Hud(game.batch);
@@ -70,6 +74,12 @@ public class PlayState implements Screen {
 		createColliders();
 		//TODO - Debug Renderer
 		b2dr = new Box2DDebugRenderer();
+	}
+	
+	private void createMap(){
+		maploader = new TmxMapLoader();
+		map = maploader.load(levelName + ".tmx");
+		renderer = new OrthogonalTiledMapRenderer(map,1 / GreenTowerGame.PPM);		
 	}
 	
 	private void createColliders(){
@@ -199,7 +209,8 @@ public class PlayState implements Screen {
 	
 	private void onGoalReached()
 	{
-		backToMenu();
+		game.setScreen(
+				new VictoryScreen(game, levelName, hud.getPlayTime()));
 	}
 	
 	private void backToMenu()
@@ -207,11 +218,7 @@ public class PlayState implements Screen {
 		game.setScreen(new MenuState(this.game)); //exit screen
 	}
 	
-	private void createMap(){
-		maploader = new TmxMapLoader();
-		map = maploader.load("SciFiStage.tmx");
-		renderer = new OrthogonalTiledMapRenderer(map,1 / GreenTowerGame.PPM);		
-	}
+	
 
 	@Override
 	public void resize(int width, int height) {
@@ -234,13 +241,14 @@ public class PlayState implements Screen {
 	@Override
 	public void hide() {
 		// TODO Auto-generated method stub
-		
+		//this.dispose();
 	}
 
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
 		map.dispose();
+		renderer.dispose();
 		world.dispose();
 	}
 }
