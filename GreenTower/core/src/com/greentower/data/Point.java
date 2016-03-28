@@ -22,6 +22,14 @@ public class Point implements Comparable<Point>{
 	
 	@Override
 	public String toString(){
-		return this.name + "	" + this.point;
+		return this.name + "-" + this.point;
+	}
+	
+	public int getPoint(){
+		return this.point;
+	}
+	
+	public String getName(){
+		return this.name;
 	}
 }

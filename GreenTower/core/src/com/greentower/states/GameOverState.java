@@ -104,14 +104,14 @@ public class GameOverState implements Screen {
 	}
 	
 	
-	private void enterPlayername(final GreenTowerGame gameInput) {
+	private void enterPlayername(GreenTowerGame game) {
 		Gdx.input.getTextInput(new TextInputListener() {
 			@Override
 			public void input(String text) {
-				gameInput.highscore.currenScore.getScores().add(new Point(text, 100));
-				Collections.sort(gameInput.highscore.currenScore.getScores());
+				GreenTowerGame.score.getScores().add(new Point(text, 100));
+				Collections.sort(GreenTowerGame.score.getScores());
 				try {
-					game.highscore.saveScore();
+					GreenTowerGame.score.saveScore();
 				} catch (IOException e) {
 
 				}

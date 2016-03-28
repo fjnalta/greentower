@@ -10,18 +10,15 @@ import java.util.Vector;
 
 public class Highscore {
 
-	public Vector<Point> scores;
+	private Vector<Point> scores;
 
 	/**
 	 * Read the old scores from the scores.txt
-	 * 
 	 * @throws IOException
 	 */
-	public Highscore() throws IOException {
+	public Highscore() throws IOException{
 		scores = new Vector<Point>();
-
 	}
-
 	/**
 	 * 
 	 * @return Vector<Point> that contains the points.
@@ -29,17 +26,31 @@ public class Highscore {
 	public Vector<Point> getScores() {
 		return scores;
 	}
-
+	
 	/**
 	 * 
-	 * @param name
-	 *            players name
-	 * @param score
-	 *            players score
+	 * @param name	players name
+	 * @param score players score
 	 */
 	public void addScores(String name, int score) {
 		scores.addElement(new Point(name, score));
 		Collections.sort(scores);
+	}
+
+	/**
+	 * Writes the scores into a file
+	 * 
+	 * @throws IOException
+	 */
+	public void saveScore() throws IOException {
+		BufferedWriter bf = new BufferedWriter(new FileWriter("scores.txt"));
+		String message = "";
+		for (int i = scores.size() - 1; i >= 0; i--) {
+			message += scores.get(i).name + "/" + scores.get(i).point + "\r\n";
+		}
+		bf.write(message);
+		bf.flush();
+		bf.close();
 	}
 
 	public int size() {

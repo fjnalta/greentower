@@ -14,13 +14,14 @@ public class Hud {
 	
 	//need new viewport for the HUD
 	public Stage stage;
+	
 	private Viewport viewport;
 	
-	private float timeCount;
-	Label timeLabel;
+	private float playTime;
+	private Label timeLabel;
 	
 	public Hud(SpriteBatch sb){
-		timeCount = 0;
+		playTime = 0f;
 		
 		viewport = new FitViewport(GreenTowerGame.V_WIDTH, GreenTowerGame.V_HEIGHT, new OrthographicCamera());
 		stage = new Stage(viewport, sb);
@@ -31,9 +32,21 @@ public class Hud {
 		//set table on full size
 		table.setFillParent(true);
 		
-		timeLabel = new Label("TIME: " + timeCount, new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+		timeLabel = new Label("TIME: " + playTime, new Label.LabelStyle(new BitmapFont(), Color.WHITE));
 		table.add(timeLabel);
 		//add the table to the stage
 		stage.addActor(table);
+	}
+	
+	public void update(float deltaTime)
+	{
+		playTime += deltaTime;
+		
+		timeLabel.setText("TIME: " + String.format("%.2f", playTime));
+	}
+	
+	public float getPlayTime()
+	{
+		return playTime;
 	}
 }
