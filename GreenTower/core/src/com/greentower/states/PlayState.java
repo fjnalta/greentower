@@ -8,6 +8,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -26,7 +27,9 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.greentower.GreenTowerGame;
 import com.greentower.Hud;
+import com.greentower.sprites.Jumper;
 import com.greentower.sprites.Player;
+import com.greentower.sprites.Player.playerState;
 
 public class PlayState implements Screen {
 	
@@ -37,6 +40,7 @@ public class PlayState implements Screen {
 	
 	//Player
 	public Player player;
+	public Jumper jumper;
 	
 	//Tiled Map
 	private TmxMapLoader maploader;
@@ -70,6 +74,8 @@ public class PlayState implements Screen {
 		
 		//create player
 		player = new Player();
+		//create jumper
+		jumper = new Jumper(100f, 100f, this);
 		//add bodies to the world
 		createColliders();
 		//TODO - Debug Renderer
@@ -126,13 +132,13 @@ public class PlayState implements Screen {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		update(delta);
 		//wipe the screen
-		
-		game.batch.setProjectionMatrix(gamecam.combined);
-		
-		//only draw what can be seen
-		game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
+		//game.batch.setProjectionMatrix(gamecam.combined);
 		//render the TileMap
 		renderer.render();
+		
+		renderObjects(delta);
+		//only draw what can be seen
+		//game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
 		//render DEBUG
 		b2dr.render(world, gamecam.combined);
 		//center the Play screen around the Viewport
@@ -141,20 +147,38 @@ public class PlayState implements Screen {
 		hud.stage.draw();				
 	}
 	
+	private void renderObjects(float dt) {
+		game.batch.begin();
+		Rectangle rect = player.getPlayerRect();
+		float offset = 0;
+		if(player.getBody().getPosition().y > (GreenTowerGame.V_HEIGHT/2)  / GreenTowerGame.PPM)
+			offset = (player.getBody().getPosition().y - gamePort.getWorldHeight() / 2)*10;
+		
+		game.batch.draw(player.currentFrame, rect.x-16, rect.y-12-offset, 0, 0, 64, 64, 0.6f, 0.6f, 0);
+		game.batch.draw(jumper.currentFrame,jumper.position.x-16,jumper.position.y-offset);
+		game.batch.end();
+	}
+	
 	protected void handleInput(float dt) {
 		if(Gdx.input.isKeyPressed(Keys.SPACE))
 		{
-			if(player.getBody().getLinearVelocity().y == 0)
-				player.getBody().setLinearVelocity(player.getBody().getLinearVelocity().x, 100f);
+			if(player.state != playerState.jumping)
+				player.getBody().applyForceToCenter(0, 4000f, true);
 		}
 		if(Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Keys.RIGHT)){
 			if(Gdx.input.isKeyPressed(Keys.LEFT))
 			{
-				player.getBody().applyForceToCenter(-800f, 0f, true);
+				if(player.state == playerState.jumping)
+					player.getBody().applyForceToCenter(-1800f, 0f, true);
+				else
+					player.getBody().applyForceToCenter(-1800f, 0f, true);
 			}
 			if(Gdx.input.isKeyPressed(Keys.RIGHT))
 			{
-				player.getBody().applyForceToCenter(800f, 0f, true);
+				if(player.state == playerState.jumping)
+					player.getBody().applyForceToCenter(1800f, 0f, true);
+				else
+					player.getBody().applyForceToCenter(1800f, 0f, true);
 			}
 		}
 		if(Gdx.input.isKeyJustPressed(Keys.ESCAPE)){
@@ -172,11 +196,13 @@ public class PlayState implements Screen {
 		
 		handleInput(dt);
 		
+		jumper.update(dt);
+		
 		//physics calculations
 		world.step(dt, 6, 2);
 		//move camera with player
 		if(player.getBody().getPosition().y > (GreenTowerGame.V_HEIGHT/2)  / GreenTowerGame.PPM) {
-			gamecam.position.set((GreenTowerGame.V_WIDTH / 2)  / GreenTowerGame.PPM, player.getBody().getPosition().y, 0);
+			gamecam.position.set(gamePort.getWorldWidth() / 2, Math.max(player.getBody().getPosition().y, gamePort.getWorldHeight() / 2), 0);
 		}
 		//update the game camera
 		gamecam.update();
@@ -186,6 +212,7 @@ public class PlayState implements Screen {
 		if(checkForGoalCollision())
 			onGoalReached();
 		
+		player.update(dt);
 		
 		hud.update(dt);
 	}
