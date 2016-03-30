@@ -2,13 +2,11 @@ package com.greentower.states;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -19,7 +17,6 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
@@ -40,7 +37,7 @@ public class PlayState implements Screen {
 	
 	//Player
 	public Player player;
-	public Jumper jumper;
+	private List<Jumper> jumperList;
 	
 	//Tiled Map
 	private TmxMapLoader maploader;
@@ -59,7 +56,7 @@ public class PlayState implements Screen {
 		
 		this.game = game;
 		this.levelName = levelName;
-				
+		
 		gamecam = new OrthographicCamera();
 		gamePort = new FitViewport(GreenTowerGame.V_WIDTH / GreenTowerGame.PPM, GreenTowerGame.V_HEIGHT / GreenTowerGame.PPM, gamecam);
 		hud = new Hud(game.batch);
@@ -74,18 +71,25 @@ public class PlayState implements Screen {
 		
 		//create player
 		player = new Player();
-		//create jumper
-		jumper = new Jumper(100f, 100f, this);
 		//add bodies to the world
 		createColliders();
 		//TODO - Debug Renderer
 //		b2dr = new Box2DDebugRenderer();
+		this.jumperList = new ArrayList<Jumper>();		
+		createJumper();
 	}
 	
 	private void createMap(){
 		maploader = new TmxMapLoader();
 		map = maploader.load(levelName + ".tmx");
 		renderer = new OrthogonalTiledMapRenderer(map,1 / GreenTowerGame.PPM);		
+	}
+	private void createJumper(){
+		this.jumperList.add(new Jumper(100f, 3750f, this));
+		this.jumperList.add(new Jumper(350f, 3950f, this));
+		this.jumperList.add(new Jumper(100f, 4150f, this));
+		this.jumperList.add(new Jumper(350f, 4350f, this));
+		
 	}
 	
 	private void createColliders(){
@@ -155,7 +159,13 @@ public class PlayState implements Screen {
 			offset = (player.getBody().getPosition().y - gamePort.getWorldHeight() / 2)*10;
 		//
 		game.batch.draw(player.currentFrame, rect.x-32, rect.y-29-offset, 0, 0, 100, 100, 0.6f, 0.6f, 0);
-		game.batch.draw(jumper.currentFrame,jumper.position.x-16,jumper.position.y-offset);
+		
+		//Jumper will be set
+		for(Jumper jumper : this.jumperList){
+			game.batch.draw(jumper.currentFrame,jumper.position.x-16,jumper.position.y-offset);
+			
+		}
+		//game.batch.draw(jumper.currentFrame,jumper.position.x-16,jumper.position.y-offset);
 		game.batch.end();
 	}
 	
@@ -196,7 +206,9 @@ public class PlayState implements Screen {
 		
 		handleInput(dt);
 		
-		jumper.update(dt);
+		for(Jumper jumper : this.jumperList){
+			jumper.update(dt);
+		}
 		
 		//physics calculations
 		world.step(dt, 6, 2);

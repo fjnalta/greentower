@@ -113,14 +113,14 @@ public class Player {
 		
 		switch(state) {
 		case jumping:
-			currentFrame = animation[3].getKeyFrame(stateTime, true);
+			currentFrame = animation[3].getKeyFrame(stateTime, true);break;
 		case running:
 			if(box.getLinearVelocity().x < -0.1)
 				currentFrame = animation[0].getKeyFrame(stateTime, true);
 			else
-				currentFrame = animation[1].getKeyFrame(stateTime, true);
+				currentFrame = animation[1].getKeyFrame(stateTime, true);break;
 		case idle:
-			currentFrame = animation[2].getKeyFrame(stateTime, true);
+			currentFrame = animation[2].getKeyFrame(stateTime, true);break;
 		}
     }
 }
