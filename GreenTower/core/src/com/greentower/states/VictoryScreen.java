@@ -142,7 +142,7 @@ public class VictoryScreen implements Screen {
 			nameLabel.setText(nameBuilder);
 		}
 		
-		if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER))
+		if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER) && nameBuilder.length() > 0)
 			saveScoreAndExit();
 	}
 	

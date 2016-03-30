@@ -49,7 +49,7 @@ public class PlayState implements Screen {
 	
 	//Box2d Physics
 	public static World world;
-	private Box2DDebugRenderer b2dr;
+//	private Box2DDebugRenderer b2dr;
 	
 	private List<Rectangle> goalRects;
 
@@ -79,7 +79,7 @@ public class PlayState implements Screen {
 		//add bodies to the world
 		createColliders();
 		//TODO - Debug Renderer
-		b2dr = new Box2DDebugRenderer();
+//		b2dr = new Box2DDebugRenderer();
 	}
 	
 	private void createMap(){
@@ -140,7 +140,7 @@ public class PlayState implements Screen {
 		//only draw what can be seen
 		//game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
 		//render DEBUG
-		b2dr.render(world, gamecam.combined);
+//		b2dr.render(world, gamecam.combined);
 		//center the Play screen around the Viewport
 		gamecam.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);
 		//draw the HUD
