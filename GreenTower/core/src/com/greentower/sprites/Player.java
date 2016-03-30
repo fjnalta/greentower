@@ -52,7 +52,7 @@ public class Player {
 		box = PlayState.world.createBody(def);
 		box.setGravityScale(2f);
 		shape = new PolygonShape();
-		shape.setAsBox(1, 1);
+		shape.setAsBox(1.5f, 2.5f);
 		fdef = new FixtureDef();
 		fdef.shape = shape;
 		box.createFixture(fdef);

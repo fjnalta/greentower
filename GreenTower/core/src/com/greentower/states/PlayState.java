@@ -153,8 +153,8 @@ public class PlayState implements Screen {
 		float offset = 0;
 		if(player.getBody().getPosition().y > (GreenTowerGame.V_HEIGHT/2)  / GreenTowerGame.PPM)
 			offset = (player.getBody().getPosition().y - gamePort.getWorldHeight() / 2)*10;
-		
-		game.batch.draw(player.currentFrame, rect.x-16, rect.y-12-offset, 0, 0, 64, 64, 0.6f, 0.6f, 0);
+		//
+		game.batch.draw(player.currentFrame, rect.x-32, rect.y-29-offset, 0, 0, 100, 100, 0.6f, 0.6f, 0);
 		game.batch.draw(jumper.currentFrame,jumper.position.x-16,jumper.position.y-offset);
 		game.batch.end();
 	}
