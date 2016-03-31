@@ -1,11 +1,7 @@
 package com.greentower;
 
-import java.io.IOException;
-
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.greentower.data.HighscoreList;
 import com.greentower.states.MenuState;
 
 public class GreenTowerGame extends Game {
